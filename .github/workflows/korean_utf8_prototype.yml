@@ -46,10 +46,13 @@ jobs:
         shell: powershell
         run: |
           choco install gettext -y --no-progress
-          Copy-Item files/lang/ko.po build/ko-build.po
-          $po = Get-Content build/ko-build.po -Raw -Encoding UTF8
-          $po = $po.Replace('msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "\n\n당신의 답은?"', 'msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "''\n\n당신의 답은?"')
-          Set-Content build/ko-build.po -Value $po -Encoding UTF8 -NoNewline
+          $po = Get-Content files/lang/ko.po -Raw -Encoding UTF8
+          $old = 'msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "\n\n당신의 답은?"'
+          $new = 'msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "''\n\n당신의 답은?"'
+          if (-not $po.Contains($old)) { throw 'Expected Sphinx translation entry was not found.' }
+          $po = $po.Replace($old, $new)
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [System.IO.File]::WriteAllText((Join-Path $PWD 'build/ko-build.po'), $po, $utf8NoBom)
           & 'C:\Program Files\gettext-iconv\bin\msgfmt.exe' --check --check-format build/ko-build.po -o build/ko-utf8.mo
 
       - uses: microsoft/setup-msbuild@v3
