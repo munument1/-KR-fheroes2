@@ -6,6 +6,7 @@ on:
       - korean-utf8-prototype
     paths:
       - files/lang/tr.po
+      - files/lang/ru.po
       - .github/workflows/export_translation_csv.yml
   workflow_dispatch:
 
@@ -18,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Export Turkish PO to Korean translation CSV
+      - name: Export English, Russian and Turkish references to Korean translation CSV
         shell: bash
         run: |
           python3 - <<'PY'
@@ -26,9 +27,10 @@ jobs:
           import csv
           from pathlib import Path
 
-          src = Path('files/lang/tr.po')
-          out = Path('fheroes2_KO_translation_working_EN_TR.csv')
-          summary = Path('fheroes2_KO_translation_working_EN_TR_summary.txt')
+          tr_src = Path('files/lang/tr.po')
+          ru_src = Path('files/lang/ru.po')
+          out = Path('fheroes2_KO_translation_working_EN_RU_TR.csv')
+          summary = Path('fheroes2_KO_translation_working_EN_RU_TR_summary.txt')
 
           def qvalue(text):
               return ast.literal_eval(text.strip())
@@ -116,12 +118,18 @@ jobs:
                       append_active(qvalue(line))
                       continue
 
-                  raise RuntimeError(f'Unsupported PO line: {line!r}')
+                  raise RuntimeError(f'Unsupported PO line in {path}: {line!r}')
 
               flush()
               return entries
 
-          entries = parse_po(src)
+          tr_entries = parse_po(tr_src)
+          ru_entries = parse_po(ru_src)
+
+          def key(entry):
+              return (entry['msgctxt'], entry['msgid'], entry['msgid_plural'])
+
+          ru_by_key = {key(entry): entry for entry in ru_entries}
 
           def split_context(text):
               if '|' not in text:
@@ -138,63 +146,83 @@ jobs:
               'msgid_raw',
               'english',
               'english_plural',
+              'russian_ref',
+              'russian_plural_0',
+              'russian_plural_1',
+              'russian_plural_2',
               'turkish_ref',
               'turkish_plural_0',
               'turkish_plural_1',
               'korean',
               'korean_plural_0',
-              'korean_plural_1',
               'flags',
               'source_refs',
               'comments',
           ]
 
           fuzzy_count = 0
-          untranslated_tr = 0
           plural_count = 0
+          russian_untranslated = 0
+          russian_missing_key = 0
+          turkish_untranslated = 0
 
           with out.open('w', encoding='utf-8-sig', newline='') as f:
               writer = csv.DictWriter(f, fieldnames=fields)
               writer.writeheader()
-              for i, e in enumerate(entries, 1):
-                  context_hint, english = split_context(e['msgid'])
-                  _, english_plural = split_context(e['msgid_plural']) if e['msgid_plural'] else ('', '')
-                  flags = ','.join(e['flags'])
 
-                  if 'fuzzy' in e['flags']:
+              for i, tr in enumerate(tr_entries, 1):
+                  ru = ru_by_key.get(key(tr))
+                  context_hint, english = split_context(tr['msgid'])
+                  _, english_plural = split_context(tr['msgid_plural']) if tr['msgid_plural'] else ('', '')
+                  flags = ','.join(tr['flags'])
+
+                  if 'fuzzy' in tr['flags']:
                       fuzzy_count += 1
-                  if e['msgid_plural']:
+                  if tr['msgid_plural']:
                       plural_count += 1
-                  if not e['msgstr'] and not any(e['msgstr_plural'].values()):
-                      untranslated_tr += 1
+                  if not tr['msgstr'] and not any(tr['msgstr_plural'].values()):
+                      turkish_untranslated += 1
 
-                  comments = ' | '.join(x for x in (e['extracted_comments'] + e['translator_comments']) if x)
+                  if ru is None:
+                      russian_missing_key += 1
+                      ru = blank_entry()
+                  elif not ru['msgstr'] and not any(ru['msgstr_plural'].values()):
+                      russian_untranslated += 1
+
+                  comments = ' | '.join(x for x in (tr['extracted_comments'] + tr['translator_comments']) if x)
                   writer.writerow({
                       'row_id': i,
                       'context': context_hint,
-                      'msgctxt': e['msgctxt'],
-                      'msgid_raw': e['msgid'],
+                      'msgctxt': tr['msgctxt'],
+                      'msgid_raw': tr['msgid'],
                       'english': english,
                       'english_plural': english_plural,
-                      'turkish_ref': e['msgstr'],
-                      'turkish_plural_0': e['msgstr_plural'].get(0, ''),
-                      'turkish_plural_1': e['msgstr_plural'].get(1, ''),
+                      'russian_ref': ru['msgstr'],
+                      'russian_plural_0': ru['msgstr_plural'].get(0, ''),
+                      'russian_plural_1': ru['msgstr_plural'].get(1, ''),
+                      'russian_plural_2': ru['msgstr_plural'].get(2, ''),
+                      'turkish_ref': tr['msgstr'],
+                      'turkish_plural_0': tr['msgstr_plural'].get(0, ''),
+                      'turkish_plural_1': tr['msgstr_plural'].get(1, ''),
                       'korean': '',
                       'korean_plural_0': '',
-                      'korean_plural_1': '',
                       'flags': flags,
-                      'source_refs': ' '.join(e['refs']),
+                      'source_refs': ' '.join(tr['refs']),
                       'comments': comments,
                   })
 
           summary.write_text(
               '\n'.join([
-                  f'source={src}',
-                  f'entries={len(entries)}',
+                  f'base_source={tr_src}',
+                  f'russian_source={ru_src}',
+                  f'entries={len(tr_entries)}',
                   f'plural_entries={plural_count}',
                   f'fuzzy_entries={fuzzy_count}',
-                  f'turkish_untranslated_entries={untranslated_tr}',
+                  f'russian_untranslated_entries={russian_untranslated}',
+                  f'russian_missing_key_entries={russian_missing_key}',
+                  f'turkish_untranslated_entries={turkish_untranslated}',
                   'encoding=UTF-8 with BOM',
+                  'reference_priority=English meaning > Russian primary reference > Turkish secondary reference',
                   'korean_columns=blank',
               ]) + '\n',
               encoding='utf-8'
@@ -205,8 +233,8 @@ jobs:
       - name: Upload translation CSV artifact
         uses: actions/upload-artifact@v7
         with:
-          name: fheroes2-KO-translation-EN-TR
+          name: fheroes2-KO-translation-EN-RU-TR
           path: |
-            fheroes2_KO_translation_working_EN_TR.csv
-            fheroes2_KO_translation_working_EN_TR_summary.txt
+            fheroes2_KO_translation_working_EN_RU_TR.csv
+            fheroes2_KO_translation_working_EN_RU_TR_summary.txt
           if-no-files-found: error
