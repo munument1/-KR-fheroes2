@@ -105,9 +105,11 @@ namespace fheroes2
 
         fillScreenBorders( display, { mainMenuBackground.x(), mainMenuBackground.y(), mainMenuBackground.width(), mainMenuBackground.height() } );
 
-        // UTF-8 Korean rendering smoke test. Keep this isolated from the normal text engine until
-        // the prototype is validated on a real build.
-        koreanUtf8Prototype::drawMainMenuTestText( display, mainMenuBackground.x() + 250, mainMenuBackground.y() + 448 );
+        // Korean font prototype: fixed UTF-8 bytes and fixed on-screen coordinates.
+        constexpr std::string_view decorativeText = "\xEA" "\xB9" "\x80" "\xEB" "\x8C" "\x80" "\xEA" "\xB1" "\xB4" " " "\xEC" "\x9E" "\xA5" "\xEC" "\x8B" "\x9D" " " "\xEA" "\xB8" "\x80" "\xEA" "\xBC" "\xB4";
+        constexpr std::string_view bodyText = "\xEA" "\xB0" "\x88" "\xEB" "\xAC" "\xB4" "\xEB" "\xA6" "\xAC" " " "\xEA" "\xB8" "\xB0" "\xEB" "\xB3" "\xB8" " " "\xEA" "\xB8" "\x80" "\xEA" "\xBC" "\xB4";
+        koreanUtf8Prototype::drawText( display, 32, 390, decorativeText, koreanUtf8Prototype::FontStyle::decorative );
+        koreanUtf8Prototype::drawText( display, 32, 430, bodyText, koreanUtf8Prototype::FontStyle::body );
     }
 
     void drawEditorMainMenuScreen()
