@@ -1,0 +1,53 @@
+name: Finalize Korean PO once
+
+on:
+  push:
+    branches:
+      - korean-utf8-prototype
+    paths:
+      - .github/workflows/finalize_ko_po_once.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify and decode Korean payload
+        shell: bash
+        run: |
+          cat .github/ko_payload3/part*.b64 | base64 --decode > /tmp/ko_strings.json.bz2
+          bzip2 --decompress --stdout /tmp/ko_strings.json.bz2 > /tmp/ko_strings.json
+          echo "9b35eb80b3763266565072b7624310976431575d564566098632cba4419d7e1b  /tmp/ko_strings.json" | sha256sum -c -
+
+      - name: Generate Korean PO
+        shell: bash
+        run: python3 .github/finalize_ko.py
+
+      - name: Validate gettext catalog
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+          msgfmt --check --check-format files/lang/ko.po -o /tmp/ko.mo
+          test -s /tmp/ko.mo
+          msgunfmt /tmp/ko.mo > /tmp/ko.roundtrip.po
+          test -s /tmp/ko.roundtrip.po
+          echo "ko.mo bytes=$(stat -c%s /tmp/ko.mo)"
+
+      - name: Commit catalog and remove temporary payloads
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add files/lang/ko.po
+          git rm -rf --ignore-unmatch .github/ko_parts .github/ko_parts2 .github/ko_payload2 .github/ko_payload3 .github/finalize_ko.py
+          git diff --cached --check
+          git commit -m "Finalize full Korean translation catalog"
+          git push origin HEAD:korean-utf8-prototype
