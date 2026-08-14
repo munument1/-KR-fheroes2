@@ -46,85 +46,87 @@ jobs:
                   'translator_comments': [],
               }
 
-          entries = []
-          entry = blank_entry()
-          active = None
+          def parse_po(path):
+              entries = []
+              state = {'entry': blank_entry(), 'active': None}
 
-          def append_active(value):
-              nonlocal_entry = entry
-              kind, index = active
-              if kind == 'msgstr_plural':
-                  nonlocal_entry['msgstr_plural'][index] = nonlocal_entry['msgstr_plural'].get(index, '') + value
-              else:
-                  nonlocal_entry[kind] += value
+              def flush():
+                  entry = state['entry']
+                  if entry['msgid'] or entry['msgid_plural']:
+                      entries.append(entry)
+                  state['entry'] = blank_entry()
+                  state['active'] = None
 
-          def flush():
-              nonlocal entry, active
-              # Skip the PO metadata header (empty msgid).
-              if entry['msgid'] or entry['msgid_plural']:
-                  entries.append(entry)
-              entry = blank_entry()
-              active = None
+              def append_active(value):
+                  kind, index = state['active']
+                  entry = state['entry']
+                  if kind == 'msgstr_plural':
+                      entry['msgstr_plural'][index] = entry['msgstr_plural'].get(index, '') + value
+                  else:
+                      entry[kind] += value
 
-          for raw in src.read_text(encoding='utf-8-sig').splitlines():
-              line = raw.rstrip('\n')
-              if not line.strip():
-                  flush()
-                  continue
+              for raw in path.read_text(encoding='utf-8-sig').splitlines():
+                  line = raw.rstrip('\n')
+                  entry = state['entry']
 
-              if line.startswith('#:'):
-                  entry['refs'].extend(line[2:].strip().split())
-                  active = None
-                  continue
-              if line.startswith('#,'):
-                  entry['flags'].extend(x.strip() for x in line[2:].split(',') if x.strip())
-                  active = None
-                  continue
-              if line.startswith('#.'):
-                  entry['extracted_comments'].append(line[2:].strip())
-                  active = None
-                  continue
-              if line.startswith('#'):
-                  entry['translator_comments'].append(line[1:].strip())
-                  active = None
-                  continue
+                  if not line.strip():
+                      flush()
+                      continue
 
-              if line.startswith('msgctxt '):
-                  entry['msgctxt'] = qvalue(line[len('msgctxt '):])
-                  active = ('msgctxt', None)
-                  continue
-              if line.startswith('msgid_plural '):
-                  entry['msgid_plural'] = qvalue(line[len('msgid_plural '):])
-                  active = ('msgid_plural', None)
-                  continue
-              if line.startswith('msgid '):
-                  entry['msgid'] = qvalue(line[len('msgid '):])
-                  active = ('msgid', None)
-                  continue
-              if line.startswith('msgstr['):
-                  close = line.index(']')
-                  index = int(line[len('msgstr['):close])
-                  value = qvalue(line[close + 1:].strip())
-                  entry['msgstr_plural'][index] = value
-                  active = ('msgstr_plural', index)
-                  continue
-              if line.startswith('msgstr '):
-                  entry['msgstr'] = qvalue(line[len('msgstr '):])
-                  active = ('msgstr', None)
-                  continue
-              if line.startswith('"') and active is not None:
-                  append_active(qvalue(line))
-                  continue
+                  if line.startswith('#:'):
+                      entry['refs'].extend(line[2:].strip().split())
+                      state['active'] = None
+                      continue
+                  if line.startswith('#,'):
+                      entry['flags'].extend(x.strip() for x in line[2:].split(',') if x.strip())
+                      state['active'] = None
+                      continue
+                  if line.startswith('#.'):
+                      entry['extracted_comments'].append(line[2:].strip())
+                      state['active'] = None
+                      continue
+                  if line.startswith('#'):
+                      entry['translator_comments'].append(line[1:].strip())
+                      state['active'] = None
+                      continue
 
-              raise RuntimeError(f'Unsupported PO line: {line!r}')
+                  if line.startswith('msgctxt '):
+                      entry['msgctxt'] = qvalue(line[len('msgctxt '):])
+                      state['active'] = ('msgctxt', None)
+                      continue
+                  if line.startswith('msgid_plural '):
+                      entry['msgid_plural'] = qvalue(line[len('msgid_plural '):])
+                      state['active'] = ('msgid_plural', None)
+                      continue
+                  if line.startswith('msgid '):
+                      entry['msgid'] = qvalue(line[len('msgid '):])
+                      state['active'] = ('msgid', None)
+                      continue
+                  if line.startswith('msgstr['):
+                      close = line.index(']')
+                      index = int(line[len('msgstr['):close])
+                      entry['msgstr_plural'][index] = qvalue(line[close + 1:].strip())
+                      state['active'] = ('msgstr_plural', index)
+                      continue
+                  if line.startswith('msgstr '):
+                      entry['msgstr'] = qvalue(line[len('msgstr '):])
+                      state['active'] = ('msgstr', None)
+                      continue
+                  if line.startswith('"') and state['active'] is not None:
+                      append_active(qvalue(line))
+                      continue
 
-          flush()
+                  raise RuntimeError(f'Unsupported PO line: {line!r}')
+
+              flush()
+              return entries
+
+          entries = parse_po(src)
 
           def split_context(text):
               if '|' not in text:
                   return '', text
               prefix, visible = text.split('|', 1)
-              # fheroes2 uses short pipe prefixes as translation-context hints.
               if prefix and '\n' not in prefix and len(prefix) <= 64:
                   return prefix, visible
               return '', text
@@ -158,6 +160,7 @@ jobs:
                   context_hint, english = split_context(e['msgid'])
                   _, english_plural = split_context(e['msgid_plural']) if e['msgid_plural'] else ('', '')
                   flags = ','.join(e['flags'])
+
                   if 'fuzzy' in e['flags']:
                       fuzzy_count += 1
                   if e['msgid_plural']:
