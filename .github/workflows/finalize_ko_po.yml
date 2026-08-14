@@ -1,5 +1,6 @@
 name: Finalize Korean PO
 
+# Korean PO payload is complete; this workflow rebuilds and validates the final catalog.
 on:
   push:
     branches:
