@@ -233,6 +233,18 @@ namespace fheroes2::koreanFont
         Sprite glyph( data.width, data.height, -data.advance, 0 );
         glyph.reset();
         const uint8_t foreground = getForegroundColor( fontType );
+        const uint8_t shadow = GetColorId( 35, 35, 35 );
+
+        // Add a crisp 1-pixel drop shadow without changing glyph dimensions or advance.
+        // Drawing the shadow first lets the foreground overwrite any overlapping pixels.
+        for ( int32_t y = 0; y + 1 < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x + 1 < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x + 1, y + 1, shadow );
+                }
+            }
+        }
 
         for ( int32_t y = 0; y < data.height; ++y ) {
             const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
