@@ -61,6 +61,35 @@ jobs:
           PY
           "/c/Program Files/gettext-iconv/bin/msgfmt.exe" --check --check-format build/ko-build.po -o build/ko-utf8.mo
 
+      - name: Register Korean locale
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/engine/translations.cpp')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''        LOCALE_IT,\n        LOCALE_LA,'''
+          new = '''        LOCALE_IT,\n        LOCALE_KO,\n        LOCALE_LA,'''
+          if old not in text:
+              raise SystemExit('Locale enum insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''                                                                                  // Latin\n                                                                                  { "la", LocaleType::LOCALE_LA },'''
+          new = '''                                                                                  // Korean\n                                                                                  { "ko", LocaleType::LOCALE_KO },\n                                                                                  { "korean", LocaleType::LOCALE_KO },\n                                                                                  // Latin\n                                                                                  { "la", LocaleType::LOCALE_LA },'''
+          if old not in text:
+              raise SystemExit('Locale map insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''        case LocaleType::LOCALE_EL:\n        case LocaleType::LOCALE_FR:'''
+          new = '''        case LocaleType::LOCALE_KO:\n            return current->ngettext( str, 0 );\n        case LocaleType::LOCALE_EL:\n        case LocaleType::LOCALE_FR:'''
+          if old not in text:
+              raise SystemExit('Plural rule insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+
       - uses: microsoft/setup-msbuild@v3
 
       - name: Build fheroes2
