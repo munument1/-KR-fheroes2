@@ -20,6 +20,16 @@
 
 file(GLOB_RECURSE FHEROES2_SOURCES CONFIGURE_DEPENDS *.cpp)
 
+# The Korean prototype generates its bitmap header before building. If the
+# generated header is absent, keep the stock text renderer and ignore the
+# Korean-only translation units so regular source builds remain unchanged.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gui/korean_font_generated.h")
+	list(FILTER FHEROES2_SOURCES EXCLUDE REGEX ".*/gui/ui_text\\.cpp$")
+else()
+	list(FILTER FHEROES2_SOURCES EXCLUDE REGEX ".*/gui/korean_font\\.cpp$")
+	list(FILTER FHEROES2_SOURCES EXCLUDE REGEX ".*/gui/ui_text_korean\\.cpp$")
+endif()
+
 add_compile_options("$<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,GNU>:${GNU_CC_WARN_OPTS}>")
 add_compile_options("$<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>:${GNU_CXX_WARN_OPTS}>")
 add_compile_options("$<$<OR:$<COMPILE_LANG_AND_ID:C,MSVC>,$<COMPILE_LANG_AND_ID:CXX,MSVC>>:${MSVC_CC_WARN_OPTS}>")

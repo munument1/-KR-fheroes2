@@ -47,5 +47,10 @@
     <Import Project="VisualStudio\SDL2.props" />
     <Import Project="VisualStudio\fheroes2\Release.props" />
   </ImportGroup>
+  <ItemGroup Condition="Exists('src\fheroes2\gui\korean_font_generated.h')">
+    <ClCompile Remove="src\fheroes2\gui\ui_text.cpp" />
+    <ClCompile Include="src\fheroes2\gui\korean_font.cpp" />
+    <ClCompile Include="src\fheroes2\gui\ui_text_korean.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

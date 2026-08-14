@@ -21,15 +21,44 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Install dependencies
+      - name: Install fheroes2 dependencies
         run: |
           script/windows/install_packages.bat
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Generate Korean bitmap font
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          mkdir -p build
+          python - <<'PY'
+          import urllib.request
+          urllib.request.urlretrieve(
+              'https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/Galmuri11.ttf',
+              'build/Galmuri11.ttf'
+          )
+          PY
+          python script/generate_korean_font.py build/Galmuri11.ttf src/fheroes2/gui/korean_font_generated.h
+
+      - name: Validate Korean PO
+        shell: powershell
+        run: |
+          choco install gettext -y --no-progress
+          $msgfmt = Get-Command msgfmt.exe -ErrorAction Stop
+          & $msgfmt.Source --check --check-format files/lang/ko.po -o build/ko-utf8.mo
 
       - uses: microsoft/setup-msbuild@v3
 
       - name: Build fheroes2
         run: |
           MSBuild.exe fheroes2-vs2019.vcxproj /property:Platform=x64 /property:Configuration=Release-SDL2
+
+      - name: Build Korean runtime catalog
+        run: |
+          mkdir -p build/x64/Release-SDL2/files/lang
+          python script/compile_korean_mo.py build/ko-utf8.mo build/x64/Release-SDL2/files/lang/ko.mo
 
       - name: Upload prototype executable
         uses: actions/upload-artifact@v7
@@ -38,4 +67,5 @@ jobs:
           path: |
             build/x64/Release-SDL2/fheroes2.exe
             build/x64/Release-SDL2/*.dll
+            build/x64/Release-SDL2/files/lang/ko.mo
           if-no-files-found: error
