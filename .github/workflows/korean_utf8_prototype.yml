@@ -1,0 +1,41 @@
+name: Korean UTF-8 Prototype
+
+on:
+  push:
+    branches:
+      - korean-utf8-prototype
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    name: Windows x64 prototype build
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          script/windows/install_packages.bat
+
+      - uses: microsoft/setup-msbuild@v3
+
+      - name: Build fheroes2
+        run: |
+          MSBuild.exe fheroes2-vs2019.vcxproj /property:Platform=x64 /property:Configuration=Release-SDL2
+
+      - name: Upload prototype executable
+        uses: actions/upload-artifact@v7
+        with:
+          name: fheroes2-korean-utf8-prototype-windows-x64
+          path: |
+            build/x64/Release-SDL2/fheroes2.exe
+            build/x64/Release-SDL2/*.dll
+          if-no-files-found: error
