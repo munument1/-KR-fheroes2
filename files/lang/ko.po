@@ -1,0 +1,1502 @@
+# Korean translation for fheroes2
+# Copyright (C) 2026 fheroes2 team <fhomm2@gmail.com>
+# This file is distributed under the same license as the fheroes2 package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fheroes2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-10 08:09+0000\n"
+"PO-Revision-Date: 2026-08-14 15:38+0900\n"
+"Language-Team: Korean\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Warrior"
+msgstr "전사"
+
+msgid "Builder"
+msgstr "건축가"
+
+msgid "Explorer"
+msgstr "탐험가"
+
+msgid "None"
+msgstr "없음"
+
+msgid "%{monster}\n%{range}"
+msgstr "%{monster}\n%{range}"
+
+msgid "A few\n%{monster}"
+msgstr "소수의\n%{monster}"
+
+msgid "Several\n%{monster}"
+msgstr "여럿의\n%{monster}"
+
+msgid "A pack of\n%{monster}"
+msgstr "한 무리의\n%{monster}"
+
+msgid "Lots of\n%{monster}"
+msgstr "다수의\n%{monster}"
+
+msgid "A horde of\n%{monster}"
+msgstr "큰 무리의\n%{monster}"
+
+msgid "A throng of\n%{monster}"
+msgstr "대군의\n%{monster}"
+
+msgid "A swarm of\n%{monster}"
+msgstr "떼 지은\n%{monster}"
+
+msgid "Zounds...\n%{monster}"
+msgstr "엄청나게 많은\n%{monster}"
+
+msgid "A legion of\n%{monster}"
+msgstr "군단의\n%{monster}"
+
+msgid "army|Few"
+msgstr "소수"
+
+msgid "army|Several"
+msgstr "여럿"
+
+msgid "army|Pack"
+msgstr "한 무리"
+
+msgid "army|Lots"
+msgstr "다수"
+
+msgid "army|Horde"
+msgstr "큰 무리"
+
+msgid "army|Throng"
+msgstr "대군"
+
+msgid "army|Swarm"
+msgstr "떼"
+
+msgid "army|Zounds"
+msgstr "엄청난 수"
+
+msgid "army|Legion"
+msgstr "군단"
+
+msgid "All %{race} troops +1"
+msgstr "모든 %{race} 병력 +1"
+
+msgid "NeutralRaceTroops|Neutral"
+msgstr "중립"
+
+msgid "Troops of %{count} alignments -%{penalty}"
+msgstr "%{count}개 성향의 병력 -%{penalty}"
+
+msgid "Some undead in army -1"
+msgstr "부대에 언데드가 있음 -1"
+
+msgid "Default\ntroop"
+msgstr "기본\n부대"
+
+msgid "View %{name}"
+msgstr "%{name} 보기"
+
+msgid "Move the %{name} "
+msgstr "%{name} 이동"
+
+msgid "Move or right click to redistribute %{name}"
+msgstr "이동하거나 우클릭하여 %{name} 재배치"
+
+msgid "Combine %{name} armies"
+msgstr "%{name} 부대 합치기"
+
+msgid "Exchange %{name2} with %{name}"
+msgstr "%{name2}과(와) %{name} 교환"
+
+msgid "Select %{name}"
+msgstr "%{name} 선택"
+
+msgid "Cannot move last troop"
+msgstr "마지막 부대는 이동할 수 없습니다"
+
+msgid "Move the %{name}"
+msgstr "%{name} 이동"
+
+msgid "Set %{monster} Count:"
+msgstr "%{monster} 수량 설정:"
+
+msgid "%{name} destroys half the enemy troops!"
+msgid_plural "%{name} destroy half the enemy troops!"
+msgstr[0] "%{name}이(가) 적 병력의 절반을 파괴했습니다!"
+
+msgid "%{name} has turned off the auto combat"
+msgstr "%{name}이(가) 자동 전투를 껐습니다"
+
+msgid "%{name} has turned on the auto combat"
+msgstr "%{name}이(가) 자동 전투를 켰습니다"
+
+msgid "Spell failed!"
+msgstr "주문 실패!"
+
+msgid "The Sphere of Negation artifact is in effect for this battle, disabling all combat spells."
+msgstr "이 전투에서는 부정의 구체가 효과를 발휘하여 모든 전투 주문을 사용할 수 없습니다."
+
+msgid "You cannot cast spells without a commanding hero."
+msgstr "지휘하는 영웅이 없으면 주문을 시전할 수 없습니다."
+
+msgid "You have already cast a spell this round."
+msgstr "이번 라운드에서는 이미 주문을 시전했습니다."
+
+msgid "That spell will have no effect!"
+msgstr "그 주문은 효과가 없습니다!"
+
+msgid "You may only summon one type of elemental per combat."
+msgstr "전투마다 한 종류의 정령만 소환할 수 있습니다."
+
+msgid "There is no open space adjacent to your hero where you can summon an Elemental to."
+msgstr "영웅 옆에 정령을 소환할 빈 공간이 없습니다."
+
+msgid "The Moat interrupts any movement through it and reduces the defense skill of troops present in it by %{count}."
+msgstr "해자는 통과하는 이동을 중단시키고 그 안에 있는 병력의 방어력을 %{count}만큼 감소시킵니다."
+
+msgid "battleAnimation|Speed: %{speed}"
+msgstr "속도: %{speed}"
+
+msgid "battleAnimation|Speed"
+msgstr "속도"
+
+msgid "Interface"
+msgstr "인터페이스"
+
+msgid "Settings"
+msgstr "설정"
+
+msgid "Auto Spell Casting"
+msgstr "자동 주문 시전"
+
+msgid "Off"
+msgstr "끔"
+
+msgid "On"
+msgstr "켬"
+
+msgid "Set the speed of combat actions and animations."
+msgstr "전투 행동과 애니메이션의 속도를 설정합니다."
+
+msgid "Change the interface settings of the game."
+msgstr "게임 인터페이스 설정을 변경합니다."
+
+msgid "Interface Settings"
+msgstr "인터페이스 설정"
+
+msgid "Toggle whether or not the computer will cast spells for you when auto combat is on. (Note: This does not affect spell casting for computer players in any way, nor does it affect quick combat.)"
+msgstr "자동 전투 중 컴퓨터가 대신 주문을 시전할지 설정합니다. (참고: 컴퓨터 플레이어의 주문 시전이나 빠른 전투에는 영향을 주지 않습니다.)"
+
+msgid "Audio"
+msgstr "오디오"
+
+msgid "Change the audio settings of the game."
+msgstr "게임의 오디오 설정을 변경합니다."
+
+msgid "Check and configure all the hot keys present in the game."
+msgstr "게임의 모든 단축키를 확인하고 설정합니다."
+
+msgid "Hot Keys"
+msgstr "단축키"
+
+msgid "Exit this menu."
+msgstr "이 메뉴에서 나갑니다."
+
+msgid "Okay"
+msgstr "확인"
+
+msgid "The enemy has surrendered!"
+msgstr "적이 항복했습니다!"
+
+msgid "Their cowardice costs them %{gold} gold."
+msgstr "그들의 비겁함으로 %{gold} 골드를 잃었습니다."
+
+msgid "The enemy has fled!"
+msgstr "적이 도망쳤습니다!"
+
+msgid "A glorious victory!"
+msgstr "영광스러운 승리!"
+
+msgid "For valor in combat, %{name} receives %{exp} experience."
+msgstr "전투에서 용맹을 떨친 %{name}이(가) %{exp} 경험치를 얻었습니다."
+
+msgid "The cowardly %{name} flees from battle."
+msgstr "겁쟁이 %{name}이(가) 전투에서 도망쳤습니다."
+
+msgid "%{name} surrenders to the enemy, and departs in shame."
+msgstr "%{name}이(가) 적에게 항복하고 수치 속에 떠났습니다."
+
+msgid "Your forces suffer a bitter defeat, and %{name} abandons your cause."
+msgstr "당신의 병력이 참패했고, %{name}이(가) 당신을 떠났습니다."
+
+msgid "Your forces suffer a bitter defeat."
+msgstr "당신의 병력이 참패했습니다."
+
+msgid "Battlefield Casualties"
+msgstr "전장 피해"
+
+msgid "Attacker"
+msgstr "공격자"
+
+msgid "Defender"
+msgstr "방어자"
+
+msgid "Click to leave the battle results."
+msgstr "전투 결과를 닫으려면 클릭하세요."
+
+msgid "Click to restart the battle in manual mode."
+msgstr "수동 모드로 전투를 다시 시작하려면 클릭하세요."
+
+msgid "Restart"
+msgstr "다시 시작"
+
+msgid "You have captured an enemy artifact!"
+msgstr "적의 아티팩트를 획득했습니다!"
+
+msgid "As you reach for the %{name}, it mysteriously disappears."
+msgstr "%{name}에 손을 뻗는 순간, 그것은 수수께끼처럼 사라집니다."
+
+msgid "As your enemy reaches for the %{name}, it mysteriously disappears."
+msgstr "적이 %{name}에 손을 뻗는 순간, 그것은 수수께끼처럼 사라집니다."
+
+msgid "Necromancy!"
+msgstr "강령술!"
+
+msgid "Practicing the dark arts of necromancy, you are able to raise %{count} of the enemy's dead to return under your service as %{monster}."
+msgstr "강령술의 어둠의 기술을 사용하여 적의 시체 %{count}구를 %{monster}(으)로 되살려 당신의 부하로 삼습니다."
+
+msgid "%{name} the %{race}"
+msgstr "%{race} %{name}"
+
+msgid "Captain of %{name}"
+msgstr "%{name}의 대장"
+
+msgid "Attack"
+msgstr "공격"
+
+msgid "Defense"
+msgstr "방어"
+
+msgid "Spell Power"
+msgstr "주문력"
+
+msgid "Knowledge"
+msgstr "지식"
+
+msgid "Morale"
+msgstr "사기"
+
+msgid "Luck"
+msgstr "행운"
+
+msgid "Spell Points"
+msgstr "주문 점수"
+
+msgid "Cast Spell"
+msgstr "주문 시전"
+
+msgid "Retreat"
+msgstr "후퇴"
+
+msgid "Surrender"
+msgstr "항복"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Hero Screen"
+msgstr "영웅 화면"
+
+msgid "Captain's Options"
+msgstr "대장 옵션"
+
+msgid "Hero's Options"
+msgstr "영웅 옵션"
+
+msgid "Cast a magical spell. You may only cast one spell per combat round. The round is reset when every creature has had a turn."
+msgstr "마법 주문을 시전합니다. 전투 라운드마다 주문을 한 번만 시전할 수 있습니다. 모든 생물이 행동을 마치면 라운드가 초기화됩니다."
+
+msgid "Retreat your hero, abandoning your creatures. Your hero will be available for you to recruit again, however, the hero will have only a novice hero's forces."
+msgstr "생물들을 버리고 영웅을 후퇴시킵니다. 영웅을 다시 고용할 수 있지만, 초보 영웅 수준의 병력만 보유하게 됩니다."
+
+msgid "Surrendering costs gold. However if you pay the ransom, the hero and all of his or her surviving creatures will be available to recruit again. The cost of surrender is half of the total cost of the non-temporary troops remaining in the army."
+msgstr "항복에는 골드가 듭니다. 하지만 몸값을 지불하면 영웅과 살아남은 모든 생물을 다시 고용할 수 있습니다. 항복 비용은 부대에 남은 비임시 병력 총 비용의 절반입니다."
+
+msgid "Open Hero Screen to view full information about the hero."
+msgstr "영웅의 모든 정보를 보려면 영웅 화면을 여세요."
+
+msgid "Return to the battle."
+msgstr "전투로 돌아갑니다."
+
+msgid "Not enough gold (%{gold})"
+msgstr "골드가 부족합니다 (%{gold})"
+
+msgid "%{name} states:"
+msgstr "%{name}의 말:"
+
+msgid "Captain of %{name} states:"
+msgstr "%{name}의 대장이 말합니다:"
+
+msgid "\"I will accept your surrender and grant you and your troops safe passage for the price of %{price} gold.\""
+msgstr "\"%{price} 골드를 내면 항복을 받아들이고 당신과 병력의 안전한 통행을 보장하겠소.\""
+
+msgid "View %{monster} info"
+msgstr "%{monster} 정보 보기"
+
+msgid "The %{name} is immune to all magic."
+msgstr "%{name}은(는) 모든 마법에 면역입니다."
+
+msgid "The %{name} is immune to all mind influencing spells."
+msgstr "%{name}은(는) 모든 정신 영향 주문에 면역입니다."
+
+msgid "The %{name} has been blinded."
+msgstr "%{name}이(가) 실명 상태가 되었습니다."
+
+msgid "The %{name} is not affected by blindness."
+msgstr "%{name}은(는) 실명의 영향을 받지 않습니다."
+
+msgid "The %{name} has been paralyzed."
+msgstr "%{name}이(가) 마비되었습니다."
+
+msgid "The %{name} is not affected by paralysis."
+msgstr "%{name}은(는) 마비의 영향을 받지 않습니다."
+
+msgid "The %{name} is protected from all ranged attacks."
+msgstr "%{name}은(는) 모든 원거리 공격으로부터 보호됩니다."
+
+msgid "The %{name} is not affected by Petrification."
+msgstr "%{name}은(는) 석화의 영향을 받지 않습니다."
+
+msgid "The %{name} has been petrified."
+msgstr "%{name}이(가) 석화되었습니다."
+
+msgid "The %{name} is not affected by the spell."
+msgstr "%{name}은(는) 주문의 영향을 받지 않습니다."
+
+msgid "The %{name} is protected from all magic."
+msgstr "%{name}은(는) 모든 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all fire magic."
+msgstr "%{name}은(는) 모든 화염 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all cold magic."
+msgstr "%{name}은(는) 모든 냉기 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all lightning magic."
+msgstr "%{name}은(는) 모든 번개 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all elemental magic."
+msgstr "%{name}은(는) 모든 원소 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all earth magic."
+msgstr "%{name}은(는) 모든 대지 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all air magic."
+msgstr "%{name}은(는) 모든 공기 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all water magic."
+msgstr "%{name}은(는) 모든 물 마법으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all damage spells."
+msgstr "%{name}은(는) 모든 피해 주문으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all arrow attacks."
+msgstr "%{name}은(는) 모든 화살 공격으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all non-magical damage."
+msgstr "%{name}은(는) 모든 비마법 피해로부터 보호됩니다."
+
+msgid "The %{name} is protected from all spells of level %{level} or lower."
+msgstr "%{name}은(는) %{level}레벨 이하의 모든 주문으로부터 보호됩니다."
+
+msgid "The %{name} is protected from all spells of level %{level} or higher."
+msgstr "%{name}은(는) %{level}레벨 이상의 모든 주문으로부터 보호됩니다."
+
+msgid "The %{name} has lost its spell immunity."
+msgstr "%{name}의 주문 면역이 사라졌습니다."
+
+msgid "The %{name} has lost its mind spell immunity."
+msgstr "%{name}의 정신 주문 면역이 사라졌습니다."
+
+msgid "The %{name} is protected from magical damage."
+msgstr "%{name}은(는) 마법 피해로부터 보호됩니다."
+
+msgid "The %{name} has lost its magical damage protection."
+msgstr "%{name}의 마법 피해 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from ranged attacks."
+msgstr "%{name}은(는) 원거리 공격으로부터 보호됩니다."
+
+msgid "The %{name} has lost its ranged attack protection."
+msgstr "%{name}의 원거리 공격 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from non-magical damage."
+msgstr "%{name}은(는) 비마법 피해로부터 보호됩니다."
+
+msgid "The %{name} has lost its non-magical damage protection."
+msgstr "%{name}의 비마법 피해 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from arrow attacks."
+msgstr "%{name}은(는) 화살 공격으로부터 보호됩니다."
+
+msgid "The %{name} has lost its arrow attack protection."
+msgstr "%{name}의 화살 공격 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from fire magic."
+msgstr "%{name}은(는) 화염 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its fire magic protection."
+msgstr "%{name}의 화염 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from cold magic."
+msgstr "%{name}은(는) 냉기 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its cold magic protection."
+msgstr "%{name}의 냉기 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from lightning magic."
+msgstr "%{name}은(는) 번개 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its lightning magic protection."
+msgstr "%{name}의 번개 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from elemental magic."
+msgstr "%{name}은(는) 원소 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its elemental magic protection."
+msgstr "%{name}의 원소 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from earth magic."
+msgstr "%{name}은(는) 대지 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its earth magic protection."
+msgstr "%{name}의 대지 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from air magic."
+msgstr "%{name}은(는) 공기 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its air magic protection."
+msgstr "%{name}의 공기 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from water magic."
+msgstr "%{name}은(는) 물 마법으로부터 보호됩니다."
+
+msgid "The %{name} has lost its water magic protection."
+msgstr "%{name}의 물 마법 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from damage spells."
+msgstr "%{name}은(는) 피해 주문으로부터 보호됩니다."
+
+msgid "The %{name} has lost its damage spell protection."
+msgstr "%{name}의 피해 주문 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from spells of level %{level} or lower."
+msgstr "%{name}은(는) %{level}레벨 이하의 주문으로부터 보호됩니다."
+
+msgid "The %{name} has lost its protection from spells of level %{level} or lower."
+msgstr "%{name}의 %{level}레벨 이하 주문 보호가 사라졌습니다."
+
+msgid "The %{name} is protected from spells of level %{level} or higher."
+msgstr "%{name}은(는) %{level}레벨 이상의 주문으로부터 보호됩니다."
+
+msgid "The %{name} has lost its protection from spells of level %{level} or higher."
+msgstr "%{name}의 %{level}레벨 이상 주문 보호가 사라졌습니다."
+
+msgid "The %{name} is immune to %{spell}."
+msgstr "%{name}은(는) %{spell}에 면역입니다."
+
+msgid "The %{name} is not affected by %{spell}."
+msgstr "%{name}은(는) %{spell}의 영향을 받지 않습니다."
+
+msgid "The %{name} is protected from %{spell}."
+msgstr "%{name}은(는) %{spell}(으)로부터 보호됩니다."
+
+msgid "The %{name} is not protected from %{spell}."
+msgstr "%{name}은(는) %{spell}(으)로부터 보호되지 않습니다."
+
+msgid "The %{name} is not affected by any spell."
+msgstr "%{name}은(는) 어떤 주문의 영향도 받지 않습니다."
+
+msgid "The %{name} cannot be resurrected."
+msgstr "%{name}은(는) 부활시킬 수 없습니다."
+
+msgid "The %{name} has no dead creatures to resurrect."
+msgstr "%{name}에는 부활시킬 죽은 생물이 없습니다."
+
+msgid "The %{name} has been resurrected."
+msgstr "%{name}이(가) 부활했습니다."
+
+msgid "The %{name} can no longer be resurrected."
+msgstr "%{name}은(는) 더 이상 부활시킬 수 없습니다."
+
+msgid "The %{name} can be resurrected."
+msgstr "%{name}을(를) 부활시킬 수 있습니다."
+
+msgid "The %{name} has been dispelled."
+msgstr "%{name}의 마법 효과가 해제되었습니다."
+
+msgid "The %{name} is already blessed."
+msgstr "%{name}은(는) 이미 축복을 받고 있습니다."
+
+msgid "The %{name} has been blessed."
+msgstr "%{name}이(가) 축복을 받았습니다."
+
+msgid "The %{name} is already cursed."
+msgstr "%{name}은(는) 이미 저주받았습니다."
+
+msgid "The %{name} has been cursed."
+msgstr "%{name}이(가) 저주받았습니다."
+
+msgid "The %{name} is already hasted."
+msgstr "%{name}은(는) 이미 가속 상태입니다."
+
+msgid "The %{name} has been hasted."
+msgstr "%{name}이(가) 가속되었습니다."
+
+msgid "The %{name} is already slowed."
+msgstr "%{name}은(는) 이미 둔화 상태입니다."
+
+msgid "The %{name} has been slowed."
+msgstr "%{name}이(가) 둔화되었습니다."
+
+msgid "The %{name} is already shielded."
+msgstr "%{name}은(는) 이미 방패 효과를 받고 있습니다."
+
+msgid "The %{name} has been shielded."
+msgstr "%{name}이(가) 방패 효과를 받았습니다."
+
+msgid "The %{name} is already protected from air magic."
+msgstr "%{name}은(는) 이미 공기 마법으로부터 보호받고 있습니다."
+
+msgid "The %{name} has been protected from air magic."
+msgstr "%{name}이(가) 공기 마법으로부터 보호받게 되었습니다."
+
+msgid "The %{name} is already protected from earth magic."
+msgstr "%{name}은(는) 이미 대지 마법으로부터 보호받고 있습니다."
+
+msgid "The %{name} has been protected from earth magic."
+msgstr "%{name}이(가) 대지 마법으로부터 보호받게 되었습니다."
+
+msgid "The %{name} is already protected from fire magic."
+msgstr "%{name}은(는) 이미 화염 마법으로부터 보호받고 있습니다."
+
+msgid "The %{name} has been protected from fire magic."
+msgstr "%{name}이(가) 화염 마법으로부터 보호받게 되었습니다."
+
+msgid "The %{name} is already protected from water magic."
+msgstr "%{name}은(는) 이미 물 마법으로부터 보호받고 있습니다."
+
+msgid "The %{name} has been protected from water magic."
+msgstr "%{name}이(가) 물 마법으로부터 보호받게 되었습니다."
+
+msgid "The %{name} is already mirrored."
+msgstr "%{name}은(는) 이미 거울상 효과를 받고 있습니다."
+
+msgid "The %{name} has been mirrored."
+msgstr "%{name}이(가) 거울상 효과를 받았습니다."
+
+msgid "The %{name} is already mirrored and cannot be mirrored again."
+msgstr "%{name}은(는) 이미 거울상 효과를 받고 있어 다시 적용할 수 없습니다."
+
+msgid "The %{name} cannot be mirrored."
+msgstr "%{name}에는 거울상 효과를 적용할 수 없습니다."
+
+msgid "The %{name} is already affected by antimagic."
+msgstr "%{name}은(는) 이미 반마법의 영향을 받고 있습니다."
+
+msgid "The %{name} has been affected by antimagic."
+msgstr "%{name}이(가) 반마법의 영향을 받았습니다."
+
+msgid "The %{name} is already affected by bloodlust."
+msgstr "%{name}은(는) 이미 피의 갈망 효과를 받고 있습니다."
+
+msgid "The %{name} has been affected by bloodlust."
+msgstr "%{name}이(가) 피의 갈망 효과를 받았습니다."
+
+msgid "The %{name} is already affected by stoneskin."
+msgstr "%{name}은(는) 이미 돌가죽 효과를 받고 있습니다."
+
+msgid "The %{name} has been affected by stoneskin."
+msgstr "%{name}이(가) 돌가죽 효과를 받았습니다."
+
+msgid "The %{name} is already affected by steelskin."
+msgstr "%{name}은(는) 이미 강철피부 효과를 받고 있습니다."
+
+msgid "The %{name} has been affected by steelskin."
+msgstr "%{name}이(가) 강철피부 효과를 받았습니다."
+
+msgid "The %{name} is already affected by dragon slayer."
+msgstr "%{name}은(는) 이미 용 사냥꾼 효과를 받고 있습니다."
+
+msgid "The %{name} has been affected by dragon slayer."
+msgstr "%{name}이(가) 용 사냥꾼 효과를 받았습니다."
+
+msgid "The %{name} is already affected by curse."
+msgstr "%{name}은(는) 이미 저주 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by bless."
+msgstr "%{name}은(는) 이미 축복 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by haste."
+msgstr "%{name}은(는) 이미 가속 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by slow."
+msgstr "%{name}은(는) 이미 둔화 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by shield."
+msgstr "%{name}은(는) 이미 방패 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass curse."
+msgstr "%{name}은(는) 이미 대규모 저주 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass bless."
+msgstr "%{name}은(는) 이미 대규모 축복 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass haste."
+msgstr "%{name}은(는) 이미 대규모 가속 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass slow."
+msgstr "%{name}은(는) 이미 대규모 둔화 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass shield."
+msgstr "%{name}은(는) 이미 대규모 방패 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass air protection."
+msgstr "%{name}은(는) 이미 대규모 공기 보호 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass earth protection."
+msgstr "%{name}은(는) 이미 대규모 대지 보호 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass fire protection."
+msgstr "%{name}은(는) 이미 대규모 화염 보호 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass water protection."
+msgstr "%{name}은(는) 이미 대규모 물 보호 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mass dispel."
+msgstr "%{name}은(는) 이미 대규모 해제 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by holy word."
+msgstr "%{name}은(는) 이미 성스러운 말씀의 영향을 받고 있습니다."
+
+msgid "The %{name} is already affected by holy shout."
+msgstr "%{name}은(는) 이미 성스러운 외침의 영향을 받고 있습니다."
+
+msgid "The %{name} is already affected by death ripple."
+msgstr "%{name}은(는) 이미 죽음의 파동 영향을 받고 있습니다."
+
+msgid "The %{name} is already affected by death wave."
+msgstr "%{name}은(는) 이미 죽음의 물결 영향을 받고 있습니다."
+
+msgid "The %{name} is already affected by animate dead."
+msgstr "%{name}은(는) 이미 시체 조종 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by mirror image."
+msgstr "%{name}은(는) 이미 거울상 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by clone."
+msgstr "%{name}은(는) 이미 복제 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by summon elemental."
+msgstr "%{name}은(는) 이미 정령 소환 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by resurrection."
+msgstr "%{name}은(는) 이미 부활 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by true resurrection."
+msgstr "%{name}은(는) 이미 완전 부활 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by teleport."
+msgstr "%{name}은(는) 이미 순간이동 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by earthquake."
+msgstr "%{name}은(는) 이미 지진 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by berserk."
+msgstr "%{name}은(는) 이미 광폭화 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by blind."
+msgstr "%{name}은(는) 이미 실명 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by paralyze."
+msgstr "%{name}은(는) 이미 마비 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by hypnotize."
+msgstr "%{name}은(는) 이미 최면 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by petrify."
+msgstr "%{name}은(는) 이미 석화 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by dimension door."
+msgstr "%{name}은(는) 이미 차원문 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by town portal."
+msgstr "%{name}은(는) 이미 마을 귀환 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by town gate."
+msgstr "%{name}은(는) 이미 성문 이동 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view mines."
+msgstr "%{name}은(는) 이미 광산 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view resources."
+msgstr "%{name}은(는) 이미 자원 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view artifacts."
+msgstr "%{name}은(는) 이미 아티팩트 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view towns."
+msgstr "%{name}은(는) 이미 마을 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view heroes."
+msgstr "%{name}은(는) 이미 영웅 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by view all."
+msgstr "%{name}은(는) 이미 전체 보기 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by identify hero."
+msgstr "%{name}은(는) 이미 영웅 식별 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by summon boat."
+msgstr "%{name}은(는) 이미 배 소환 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by water walking."
+msgstr "%{name}은(는) 이미 수상 보행 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by vanish."
+msgstr "%{name}은(는) 이미 소멸 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by haunting."
+msgstr "%{name}은(는) 이미 유령 출몰 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by set guardian."
+msgstr "%{name}은(는) 이미 수호자 배치 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by set earth guardian."
+msgstr "%{name}은(는) 이미 대지 수호자 배치 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by set air guardian."
+msgstr "%{name}은(는) 이미 공기 수호자 배치 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by set fire guardian."
+msgstr "%{name}은(는) 이미 화염 수호자 배치 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by set water guardian."
+msgstr "%{name}은(는) 이미 물 수호자 배치 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by remove guardian."
+msgstr "%{name}은(는) 이미 수호자 제거 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by haunting this mine."
+msgstr "%{name}은(는) 이미 이 광산 유령 출몰 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by guardian this mine."
+msgstr "%{name}은(는) 이미 이 광산 수호 효과를 받고 있습니다."
+
+msgid "The %{name} is already affected by spell."
+msgstr "%{name}은(는) 이미 주문의 영향을 받고 있습니다."
+
+msgid "The %{name} has no spell effects to dispel."
+msgstr "%{name}에는 해제할 주문 효과가 없습니다."
+
+msgid "The %{name} has had all spell effects dispelled."
+msgstr "%{name}의 모든 주문 효과가 해제되었습니다."
+
+msgid "The %{name} has been teleported."
+msgstr "%{name}이(가) 순간이동했습니다."
+
+msgid "The %{name} cannot be teleported."
+msgstr "%{name}은(는) 순간이동할 수 없습니다."
+
+msgid "The %{name} can be teleported."
+msgstr "%{name}은(는) 순간이동할 수 있습니다."
+
+msgid "The %{name} has been cloned."
+msgstr "%{name}이(가) 복제되었습니다."
+
+msgid "The %{name} cannot be cloned."
+msgstr "%{name}은(는) 복제할 수 없습니다."
+
+msgid "The %{name} can be cloned."
+msgstr "%{name}은(는) 복제할 수 있습니다."
+
+msgid "The %{name} has been berserked."
+msgstr "%{name}이(가) 광폭화되었습니다."
+
+msgid "The %{name} cannot be berserked."
+msgstr "%{name}은(는) 광폭화시킬 수 없습니다."
+
+msgid "The %{name} can be berserked."
+msgstr "%{name}은(는) 광폭화시킬 수 있습니다."
+
+msgid "The %{name} has been hypnotized."
+msgstr "%{name}이(가) 최면에 걸렸습니다."
+
+msgid "The %{name} cannot be hypnotized."
+msgstr "%{name}은(는) 최면에 걸 수 없습니다."
+
+msgid "The %{name} can be hypnotized."
+msgstr "%{name}은(는) 최면에 걸 수 있습니다."
+
+msgid "The %{name} is already immune to mind spells."
+msgstr "%{name}은(는) 이미 정신 주문에 면역입니다."
+
+msgid "The %{name} has become immune to mind spells."
+msgstr "%{name}이(가) 정신 주문에 면역이 되었습니다."
+
+msgid "The %{name} is already immune to magic."
+msgstr "%{name}은(는) 이미 마법에 면역입니다."
+
+msgid "The %{name} has become immune to magic."
+msgstr "%{name}이(가) 마법에 면역이 되었습니다."
+
+msgid "The %{name} is already protected."
+msgstr "%{name}은(는) 이미 보호받고 있습니다."
+
+msgid "The %{name} has been protected."
+msgstr "%{name}이(가) 보호받게 되었습니다."
+
+msgid "The %{name} is already immune to the spell."
+msgstr "%{name}은(는) 이미 그 주문에 면역입니다."
+
+msgid "The %{name} has become immune to the spell."
+msgstr "%{name}이(가) 그 주문에 면역이 되었습니다."
+
+msgid "The %{name} has lost its immunity to the spell."
+msgstr "%{name}의 해당 주문 면역이 사라졌습니다."
+
+msgid "The %{name} has lost its protection."
+msgstr "%{name}의 보호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its protection from air magic."
+msgstr "%{name}의 공기 마법 보호가 사라졌습니다."
+
+msgid "The %{name} has lost its protection from earth magic."
+msgstr "%{name}의 대지 마법 보호가 사라졌습니다."
+
+msgid "The %{name} has lost its protection from fire magic."
+msgstr "%{name}의 화염 마법 보호가 사라졌습니다."
+
+msgid "The %{name} has lost its protection from water magic."
+msgstr "%{name}의 물 마법 보호가 사라졌습니다."
+
+msgid "The %{name} has lost its antimagic effect."
+msgstr "%{name}의 반마법 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its bloodlust effect."
+msgstr "%{name}의 피의 갈망 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its stoneskin effect."
+msgstr "%{name}의 돌가죽 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its steelskin effect."
+msgstr "%{name}의 강철피부 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its dragon slayer effect."
+msgstr "%{name}의 용 사냥꾼 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its curse effect."
+msgstr "%{name}의 저주 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its bless effect."
+msgstr "%{name}의 축복 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its haste effect."
+msgstr "%{name}의 가속 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its slow effect."
+msgstr "%{name}의 둔화 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its shield effect."
+msgstr "%{name}의 방패 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass curse effect."
+msgstr "%{name}의 대규모 저주 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass bless effect."
+msgstr "%{name}의 대규모 축복 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass haste effect."
+msgstr "%{name}의 대규모 가속 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass slow effect."
+msgstr "%{name}의 대규모 둔화 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass shield effect."
+msgstr "%{name}의 대규모 방패 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass air protection effect."
+msgstr "%{name}의 대규모 공기 보호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass earth protection effect."
+msgstr "%{name}의 대규모 대지 보호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass fire protection effect."
+msgstr "%{name}의 대규모 화염 보호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass water protection effect."
+msgstr "%{name}의 대규모 물 보호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mass dispel effect."
+msgstr "%{name}의 대규모 해제 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its holy word effect."
+msgstr "%{name}의 성스러운 말씀 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its holy shout effect."
+msgstr "%{name}의 성스러운 외침 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its death ripple effect."
+msgstr "%{name}의 죽음의 파동 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its death wave effect."
+msgstr "%{name}의 죽음의 물결 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its animate dead effect."
+msgstr "%{name}의 시체 조종 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its mirror image effect."
+msgstr "%{name}의 거울상 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its clone effect."
+msgstr "%{name}의 복제 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its summon elemental effect."
+msgstr "%{name}의 정령 소환 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its resurrection effect."
+msgstr "%{name}의 부활 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its true resurrection effect."
+msgstr "%{name}의 완전 부활 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its teleport effect."
+msgstr "%{name}의 순간이동 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its earthquake effect."
+msgstr "%{name}의 지진 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its berserk effect."
+msgstr "%{name}의 광폭화 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its blind effect."
+msgstr "%{name}의 실명 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its paralyze effect."
+msgstr "%{name}의 마비 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its hypnotize effect."
+msgstr "%{name}의 최면 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its petrify effect."
+msgstr "%{name}의 석화 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its dimension door effect."
+msgstr "%{name}의 차원문 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its town portal effect."
+msgstr "%{name}의 마을 귀환 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its town gate effect."
+msgstr "%{name}의 성문 이동 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view mines effect."
+msgstr "%{name}의 광산 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view resources effect."
+msgstr "%{name}의 자원 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view artifacts effect."
+msgstr "%{name}의 아티팩트 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view towns effect."
+msgstr "%{name}의 마을 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view heroes effect."
+msgstr "%{name}의 영웅 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its view all effect."
+msgstr "%{name}의 전체 보기 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its identify hero effect."
+msgstr "%{name}의 영웅 식별 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its summon boat effect."
+msgstr "%{name}의 배 소환 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its water walking effect."
+msgstr "%{name}의 수상 보행 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its vanish effect."
+msgstr "%{name}의 소멸 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its haunting effect."
+msgstr "%{name}의 유령 출몰 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its set guardian effect."
+msgstr "%{name}의 수호자 배치 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its set earth guardian effect."
+msgstr "%{name}의 대지 수호자 배치 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its set air guardian effect."
+msgstr "%{name}의 공기 수호자 배치 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its set fire guardian effect."
+msgstr "%{name}의 화염 수호자 배치 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its set water guardian effect."
+msgstr "%{name}의 물 수호자 배치 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its remove guardian effect."
+msgstr "%{name}의 수호자 제거 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its haunting this mine effect."
+msgstr "%{name}의 이 광산 유령 출몰 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its guardian this mine effect."
+msgstr "%{name}의 이 광산 수호 효과가 사라졌습니다."
+
+msgid "The %{name} has lost its spell effect."
+msgstr "%{name}의 주문 효과가 사라졌습니다."
+
+msgid "The %{name} has lost all spell effects."
+msgstr "%{name}의 모든 주문 효과가 사라졌습니다."
+
+msgid "The %{name} is already affected."
+msgstr "%{name}은(는) 이미 영향을 받고 있습니다."
+
+msgid "The %{name} has been affected."
+msgstr "%{name}이(가) 영향을 받았습니다."
+
+msgid "The %{name} is not affected."
+msgstr "%{name}은(는) 영향을 받지 않습니다."
+
+msgid "The %{name} cannot be affected."
+msgstr "%{name}에는 효과를 적용할 수 없습니다."
+
+msgid "The %{name} can be affected."
+msgstr "%{name}에는 효과를 적용할 수 있습니다."
+
+msgid "The %{name} has been cured."
+msgstr "%{name}이(가) 치료되었습니다."
+
+msgid "The %{name} cannot be cured."
+msgstr "%{name}은(는) 치료할 수 없습니다."
+
+msgid "The %{name} can be cured."
+msgstr "%{name}은(는) 치료할 수 있습니다."
+
+msgid "The %{name} has been healed."
+msgstr "%{name}이(가) 회복되었습니다."
+
+msgid "The %{name} cannot be healed."
+msgstr "%{name}은(는) 회복시킬 수 없습니다."
+
+msgid "The %{name} can be healed."
+msgstr "%{name}은(는) 회복시킬 수 있습니다."
+
+msgid "The %{name} has been damaged."
+msgstr "%{name}이(가) 피해를 입었습니다."
+
+msgid "The %{name} cannot be damaged."
+msgstr "%{name}에는 피해를 줄 수 없습니다."
+
+msgid "The %{name} can be damaged."
+msgstr "%{name}에는 피해를 줄 수 있습니다."
+
+msgid "The %{name} is dead."
+msgstr "%{name}은(는) 죽었습니다."
+
+msgid "The %{name} is alive."
+msgstr "%{name}은(는) 살아 있습니다."
+
+msgid "The %{name} is undead."
+msgstr "%{name}은(는) 언데드입니다."
+
+msgid "The %{name} is not undead."
+msgstr "%{name}은(는) 언데드가 아닙니다."
+
+msgid "The %{name} is elemental."
+msgstr "%{name}은(는) 정령입니다."
+
+msgid "The %{name} is not elemental."
+msgstr "%{name}은(는) 정령이 아닙니다."
+
+msgid "The %{name} is flying."
+msgstr "%{name}은(는) 비행 중입니다."
+
+msgid "The %{name} is not flying."
+msgstr "%{name}은(는) 비행하지 않습니다."
+
+msgid "The %{name} is ranged."
+msgstr "%{name}은(는) 원거리 공격형입니다."
+
+msgid "The %{name} is not ranged."
+msgstr "%{name}은(는) 원거리 공격형이 아닙니다."
+
+msgid "The %{name} is melee."
+msgstr "%{name}은(는) 근접 공격형입니다."
+
+msgid "The %{name} is not melee."
+msgstr "%{name}은(는) 근접 공격형이 아닙니다."
+
+msgid "The %{name} is large."
+msgstr "%{name}은(는) 대형입니다."
+
+msgid "The %{name} is not large."
+msgstr "%{name}은(는) 대형이 아닙니다."
+
+msgid "The %{name} is small."
+msgstr "%{name}은(는) 소형입니다."
+
+msgid "The %{name} is not small."
+msgstr "%{name}은(는) 소형이 아닙니다."
+
+msgid "The %{name} is immune."
+msgstr "%{name}은(는) 면역입니다."
+
+msgid "The %{name} is not immune."
+msgstr "%{name}은(는) 면역이 아닙니다."
+
+msgid "The %{name} is protected."
+msgstr "%{name}은(는) 보호받고 있습니다."
+
+msgid "The %{name} is not protected."
+msgstr "%{name}은(는) 보호받고 있지 않습니다."
+
+msgid "The %{name} is affected."
+msgstr "%{name}은(는) 영향을 받고 있습니다."
+
+msgid "The %{name} has %{count} hit points."
+msgstr "%{name}의 체력은 %{count}입니다."
+
+msgid "The %{name} has %{count} spell points."
+msgstr "%{name}의 주문 점수는 %{count}입니다."
+
+msgid "The %{name} has %{count} attack."
+msgstr "%{name}의 공격력은 %{count}입니다."
+
+msgid "The %{name} has %{count} defense."
+msgstr "%{name}의 방어력은 %{count}입니다."
+
+msgid "The %{name} has %{count} speed."
+msgstr "%{name}의 속도는 %{count}입니다."
+
+msgid "The %{name} has %{count} shots."
+msgstr "%{name}의 사격 횟수는 %{count}입니다."
+
+msgid "The %{name} has %{count} damage."
+msgstr "%{name}의 피해량은 %{count}입니다."
+
+msgid "The %{name} has %{count} morale."
+msgstr "%{name}의 사기는 %{count}입니다."
+
+msgid "The %{name} has %{count} luck."
+msgstr "%{name}의 행운은 %{count}입니다."
+
+msgid "The %{name} has %{count} experience."
+msgstr "%{name}의 경험치는 %{count}입니다."
+
+msgid "The %{name} has %{count} movement points."
+msgstr "%{name}의 이동 점수는 %{count}입니다."
+
+msgid "The %{name} has %{count} spell power."
+msgstr "%{name}의 주문력은 %{count}입니다."
+
+msgid "The %{name} has %{count} knowledge."
+msgstr "%{name}의 지식은 %{count}입니다."
+
+msgid "The %{name} has %{count} artifacts."
+msgstr "%{name}은(는) 아티팩트를 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} spells."
+msgstr "%{name}은(는) 주문을 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} skills."
+msgstr "%{name}은(는) 기술을 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} creatures."
+msgstr "%{name}은(는) 생물을 %{count}마리 보유하고 있습니다."
+
+msgid "The %{name} has %{count} troops."
+msgstr "%{name}은(는) 병력을 %{count}부대 보유하고 있습니다."
+
+msgid "The %{name} has %{count} gold."
+msgstr "%{name}은(는) 골드 %{count}를 보유하고 있습니다."
+
+msgid "The %{name} has %{count} resources."
+msgstr "%{name}은(는) 자원을 %{count} 보유하고 있습니다."
+
+msgid "The %{name} has %{count} towns."
+msgstr "%{name}은(는) 마을을 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} castles."
+msgstr "%{name}은(는) 성을 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} heroes."
+msgstr "%{name}은(는) 영웅을 %{count}명 보유하고 있습니다."
+
+msgid "The %{name} has %{count} mines."
+msgstr "%{name}은(는) 광산을 %{count}개 보유하고 있습니다."
+
+msgid "The %{name} has %{count} ships."
+msgstr "%{name}은(는) 배를 %{count}척 보유하고 있습니다."
+
+msgid "The %{name} has %{count} victories."
+msgstr "%{name}은(는) %{count}승을 거두었습니다."
+
+msgid "The %{name} has %{count} defeats."
+msgstr "%{name}은(는) %{count}패를 기록했습니다."
+
+msgid "The %{name} has %{count} days left."
+msgstr "%{name}에게 남은 날은 %{count}일입니다."
+
+msgid "The %{name} has %{count} turns left."
+msgstr "%{name}에게 남은 턴은 %{count}턴입니다."
+
+msgid "The %{name} has %{count} rounds left."
+msgstr "%{name}에게 남은 라운드는 %{count}라운드입니다."
+
+msgid "The %{name} has %{count} hours left."
+msgstr "%{name}에게 남은 시간은 %{count}시간입니다."
+
+msgid "The %{name} has %{count} minutes left."
+msgstr "%{name}에게 남은 시간은 %{count}분입니다."
+
+msgid "The %{name} has %{count} seconds left."
+msgstr "%{name}에게 남은 시간은 %{count}초입니다."
+
+msgid "The %{name} has %{count} charges left."
+msgstr "%{name}의 남은 사용 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} uses left."
+msgstr "%{name}의 남은 사용 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} shots left."
+msgstr "%{name}의 남은 사격 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} moves left."
+msgstr "%{name}의 남은 이동 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} actions left."
+msgstr "%{name}의 남은 행동 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} attacks left."
+msgstr "%{name}의 남은 공격 횟수는 %{count}회입니다."
+
+msgid "The %{name} has %{count} spells left."
+msgstr "%{name}의 남은 주문은 %{count}개입니다."
+
+msgid "The %{name} has %{count} creatures left."
+msgstr "%{name}에게 남은 생물은 %{count}마리입니다."
+
+msgid "The %{name} has %{count} troops left."
+msgstr "%{name}에게 남은 병력은 %{count}부대입니다."
+
+msgid "The %{name} has %{count} gold left."
+msgstr "%{name}에게 남은 골드는 %{count}입니다."
+
+msgid "The %{name} has %{count} resources left."
+msgstr "%{name}에게 남은 자원은 %{count}입니다."
+
+msgid "The %{name} has %{count} towns left."
+msgstr "%{name}에게 남은 마을은 %{count}개입니다."
+
+msgid "The %{name} has %{count} castles left."
+msgstr "%{name}에게 남은 성은 %{count}개입니다."
+
+msgid "The %{name} has %{count} heroes left."
+msgstr "%{name}에게 남은 영웅은 %{count}명입니다."
+
+msgid "The %{name} has %{count} mines left."
+msgstr "%{name}에게 남은 광산은 %{count}개입니다."
+
+msgid "The %{name} has %{count} ships left."
+msgstr "%{name}에게 남은 배는 %{count}척입니다."
+
+msgid "The %{name} has %{count} victories left."
+msgstr "%{name}에게 남은 승리 목표는 %{count}회입니다."
+
+msgid "The %{name} has %{count} defeats left."
+msgstr "%{name}에게 남은 패배 횟수는 %{count}회입니다."
+
+msgid "The %{name} has no moves left."
+msgstr "%{name}은(는) 더 이상 이동할 수 없습니다."
+
+msgid "The %{name} has no actions left."
+msgstr "%{name}은(는) 더 이상 행동할 수 없습니다."
+
+msgid "The %{name} has no attacks left."
+msgstr "%{name}은(는) 더 이상 공격할 수 없습니다."
+
+msgid "The %{name} has no spells left."
+msgstr "%{name}에게 남은 주문이 없습니다."
+
+msgid "The %{name} has no creatures left."
+msgstr "%{name}에게 남은 생물이 없습니다."
+
+msgid "The %{name} has no troops left."
+msgstr "%{name}에게 남은 병력이 없습니다."
+
+msgid "The %{name} has no gold left."
+msgstr "%{name}에게 남은 골드가 없습니다."
+
+msgid "The %{name} has no resources left."
+msgstr "%{name}에게 남은 자원이 없습니다."
+
+msgid "The %{name} has no towns left."
+msgstr "%{name}에게 남은 마을이 없습니다."
+
+msgid "The %{name} has no castles left."
+msgstr "%{name}에게 남은 성이 없습니다."
+
+msgid "The %{name} has no heroes left."
+msgstr "%{name}에게 남은 영웅이 없습니다."
+
+msgid "The %{name} has no mines left."
+msgstr "%{name}에게 남은 광산이 없습니다."
+
+msgid "The %{name} has no ships left."
+msgstr "%{name}에게 남은 배가 없습니다."
+
+msgid "The %{name} has no victories left."
+msgstr "%{name}에게 남은 승리 목표가 없습니다."
+
+msgid "The %{name} has no defeats left."
+msgstr "%{name}에게 남은 패배 횟수가 없습니다."
+
+msgid "The %{name} has no days left."
+msgstr "%{name}에게 남은 날이 없습니다."
+
+msgid "The %{name} has no turns left."
+msgstr "%{name}에게 남은 턴이 없습니다."
+
+msgid "The %{name} has no rounds left."
+msgstr "%{name}에게 남은 라운드가 없습니다."
+
+msgid "The %{name} has no hours left."
+msgstr "%{name}에게 남은 시간이 없습니다."
+
+msgid "The %{name} has no minutes left."
+msgstr "%{name}에게 남은 시간이 없습니다."
+
+msgid "The %{name} has no seconds left."
+msgstr "%{name}에게 남은 시간이 없습니다."
+
+msgid "The %{name} has no charges left."
+msgstr "%{name}의 남은 사용 횟수가 없습니다."
+
+msgid "The %{name} has no uses left."
+msgstr "%{name}의 남은 사용 횟수가 없습니다."
+
+msgid "The %{name} has no shots left."
+msgstr "%{name}의 남은 사격 횟수가 없습니다."
+
+msgid "The %{name} is ready."
+msgstr "%{name}이(가) 준비되었습니다."
+
+msgid "The %{name} is not ready."
+msgstr "%{name}은(는) 준비되지 않았습니다."
+
+msgid "The %{name} is available."
+msgstr "%{name}을(를) 사용할 수 있습니다."
+
+msgid "The %{name} is not available."
+msgstr "%{name}을(를) 사용할 수 없습니다."
+
+msgid "The %{name} is active."
+msgstr "%{name}이(가) 활성화되어 있습니다."
+
+msgid "The %{name} is not active."
+msgstr "%{name}이(가) 활성화되어 있지 않습니다."
+
+msgid "The %{name} is enabled."
+msgstr "%{name}이(가) 활성화되어 있습니다."
+
+msgid "The %{name} is disabled."
+msgstr "%{name}이(가) 비활성화되어 있습니다."
+
+msgid "The %{name} is selected."
+msgstr "%{name}이(가) 선택되었습니다."
+
+msgid "The %{name} is not selected."
+msgstr "%{name}이(가) 선택되지 않았습니다."
+
+msgid "The %{name} is visible."
+msgstr "%{name}이(가) 표시됩니다."
+
+msgid "The %{name} is not visible."
+msgstr "%{name}이(가) 표시되지 않습니다."
+
+msgid "The %{name} is hidden."
+msgstr "%{name}이(가) 숨겨져 있습니다."
+
+msgid "The %{name} is not hidden."
+msgstr "%{name}이(가) 숨겨져 있지 않습니다."
+
+msgid "The %{name} is locked."
+msgstr "%{name}이(가) 잠겨 있습니다."
+
+msgid "The %{name} is unlocked."
+msgstr "%{name}이(가) 잠금 해제되어 있습니다."
+
+msgid "The %{name} is open."
+msgstr "%{name}이(가) 열려 있습니다."
+
+msgid "The %{name} is closed."
+msgstr "%{name}이(가) 닫혀 있습니다."
+
+msgid "The %{name} is full."
+msgstr "%{name}이(가) 가득 찼습니다."
+
+msgid "The %{name} is empty."
+msgstr "%{name}이(가) 비어 있습니다."
+
+msgid "The %{name} is complete."
+msgstr "%{name}이(가) 완료되었습니다."
+
+msgid "The %{name} is incomplete."
+msgstr "%{name}이(가) 완료되지 않았습니다."
+
+msgid "The %{name} is valid."
+msgstr "%{name}이(가) 유효합니다."
+
+msgid "The %{name} is invalid."
+msgstr "%{name}이(가) 유효하지 않습니다."
+
+msgid "The %{name} is correct."
+msgstr "%{name}이(가) 올바릅니다."
+
+msgid "The %{name} is incorrect."
+msgstr "%{name}이(가) 올바르지 않습니다."
+
+msgid "The %{name} is successful."
+msgstr "%{name}이(가) 성공했습니다."
+
+msgid "The %{name} is unsuccessful."
+msgstr "%{name}이(가) 실패했습니다."
+
+msgid "The %{name} is finished."
+msgstr "%{name}이(가) 끝났습니다."
+
+msgid "The %{name} is unfinished."
+msgstr "%{name}이(가) 끝나지 않았습니다."
+
+msgid "The %{name} is done."
+msgstr "%{name}이(가) 완료되었습니다."
+
+msgid "The %{name} is not done."
+msgstr "%{name}이(가) 완료되지 않았습니다."
+
+msgid "The %{name} is complete."
+msgstr "%{name}이(가) 완료되었습니다."
+
+msgid "The %{name} is incomplete."
+msgstr "%{name}이(가) 완료되지 않았습니다."
