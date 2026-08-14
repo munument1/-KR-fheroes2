@@ -21,47 +21,91 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Rebuild full Korean catalog
+      - name: Recover and validate full Korean catalog
         shell: bash
         run: |
-          : > /tmp/ko.po.bz2
-          for part in .github/ko_payload3/part*.b64; do
-            base64 --decode "$part" >> /tmp/ko.po.bz2
-          done
-          bzip2 --test /tmp/ko.po.bz2
-          bzip2 --decompress --stdout /tmp/ko.po.bz2 > files/lang/ko.po
-
           python3 - <<'PY'
           from pathlib import Path
+          import base64, bz2, gzip, re
 
-          path = Path('files/lang/ko.po')
-          text = path.read_text(encoding='utf-8')
+          candidates = [
+              Path('.github/ko_parts'),
+              Path('.github/ko_parts2'),
+              Path('.github/ko_payload2'),
+              Path('.github/ko_payload3'),
+          ]
 
-          # Normalize only the PO header if an earlier generator double-escaped newlines.
-          blocks = text.split('\n\n', 1)
+          def validate(text: str) -> bool:
+              lines = text.splitlines()
+              entries = sum(1 for line in lines if line.startswith('msgid ')) - 1
+              plurals = sum(1 for line in lines if line.startswith('msgid_plural '))
+              fuzzy = sum(1 for line in lines if line.startswith('#,') and 'fuzzy' in line)
+              return (
+                  entries == 3240
+                  and plurals == 30
+                  and fuzzy == 0
+                  and 'msgid "Move the %{name} "' in text
+                  and 'msgid "Map: "' in text
+                  and 'msgid "Warrior"' in text
+                  and 'msgstr "전사"' in text
+              )
+
+          recovered = None
+          source = None
+
+          for directory in candidates:
+              if not directory.exists():
+                  continue
+              parts = sorted(directory.glob('part*.b64'))
+              if not parts:
+                  continue
+
+              raw = ''.join(p.read_text(encoding='ascii', errors='ignore') for p in parts)
+              raw = re.sub(r'\s+', '', raw)
+              raw += '=' * (-len(raw) % 4)
+
+              try:
+                  payload = base64.b64decode(raw, validate=False)
+              except Exception as exc:
+                  print(f'{directory}: base64 decode failed: {exc}')
+                  continue
+
+              for codec, decoder in [('gzip', gzip.decompress), ('bzip2', bz2.decompress)]:
+                  try:
+                      data = decoder(payload)
+                      text = data.decode('utf-8')
+                  except Exception as exc:
+                      print(f'{directory}: {codec} failed: {exc}')
+                      continue
+
+                  if validate(text):
+                      recovered = text
+                      source = f'{directory} ({codec})'
+                      break
+                  print(f'{directory}: {codec} decoded but catalog validation failed')
+              if recovered is not None:
+                  break
+
+          if recovered is None:
+              raise SystemExit('No temporary payload reconstructed a valid 3240-entry Korean catalog')
+
+          # Normalize only the header newline escaping if necessary.
+          blocks = recovered.split('\n\n', 1)
           if len(blocks) == 2:
               header, body = blocks
               header = header.replace('\\\\n"', '\\n"')
-              text = header + '\n\n' + body
-              path.write_text(text, encoding='utf-8', newline='')
+              recovered = header + '\n\n' + body
 
-          lines = text.splitlines()
-          entries = sum(1 for line in lines if line.startswith('msgid ')) - 1
-          plurals = sum(1 for line in lines if line.startswith('msgid_plural '))
-          fuzzy = sum(1 for line in lines if line.startswith('#,') and 'fuzzy' in line)
+          if '"Language: ko\\n"' not in recovered:
+              raise SystemExit('Korean language header missing')
+          if '"Plural-Forms: nplurals=1; plural=0;\\n"' not in recovered:
+              raise SystemExit('Korean plural header missing')
 
-          assert entries == 3240, entries
-          assert plurals == 30, plurals
-          assert '"Language: ko\\n"' in text
-          assert '"Plural-Forms: nplurals=1; plural=0;\\n"' in text
-          assert 'msgid "Move the %{name} "' in text
-          assert 'msgid "Map: "' in text
-          assert 'msgid "Warrior"' in text and 'msgstr "전사"' in text
-          assert fuzzy == 0, fuzzy
-
-          print(f'entries={entries}')
-          print(f'plural_entries={plurals}')
-          print(f'fuzzy_entries={fuzzy}')
+          Path('files/lang/ko.po').write_text(recovered, encoding='utf-8', newline='')
+          print(f'Recovered from {source}')
+          print('entries=3240')
+          print('plural_entries=30')
+          print('fuzzy_entries=0')
           PY
 
       - name: Validate gettext catalog
@@ -74,7 +118,7 @@ jobs:
           msgunfmt /tmp/ko.mo > /tmp/ko.roundtrip.po
           test -s /tmp/ko.roundtrip.po
 
-      - name: Commit final catalog and clean temporary files
+      - name: Commit final catalog and remove temporary transport files
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
