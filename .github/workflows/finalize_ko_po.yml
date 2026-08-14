@@ -1,0 +1,64 @@
+name: Finalize Korean PO
+
+on:
+  push:
+    branches:
+      - korean-utf8-prototype
+    paths:
+      - .github/workflows/finalize_ko_po.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    name: Rebuild and validate full ko.po
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild full Korean catalog
+        shell: bash
+        run: |
+          cat .github/ko_parts/part*.b64 | base64 --decode | gzip --decompress > files/lang/ko.po
+          echo "afbe8abb0b3f45fadbdcd09a04d5bdb0c12b3436469041ac647236bd92937737  files/lang/ko.po" | sha256sum -c -
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          text = Path('files/lang/ko.po').read_text(encoding='utf-8')
+          entries = sum(1 for line in text.splitlines() if line.startswith('msgid ')) - 1
+          plurals = sum(1 for line in text.splitlines() if line.startswith('msgid_plural '))
+
+          assert entries == 3240, entries
+          assert plurals == 30, plurals
+          assert '"Language: ko\\n"' in text
+          assert '"Plural-Forms: nplurals=1; plural=0;\\n"' in text
+
+          print(f'entries={entries}')
+          print(f'plural_entries={plurals}')
+          PY
+
+      - name: Validate gettext catalog
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+          msgfmt --check --check-format files/lang/ko.po -o /tmp/ko.mo
+          test -s /tmp/ko.mo
+          msgunfmt /tmp/ko.mo > /tmp/ko.roundtrip.po
+          test -s /tmp/ko.roundtrip.po
+
+      - name: Commit full Korean catalog
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add files/lang/ko.po
+          git diff --cached --check
+          git commit -m "Finalize full Korean translation catalog"
+          git push origin HEAD:korean-utf8-prototype
