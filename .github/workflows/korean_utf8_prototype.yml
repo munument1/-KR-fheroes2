@@ -3,7 +3,7 @@ name: Korean UTF-8 Prototype
 on:
   push:
     branches:
-      - korean-utf8-prototype
+      - korean-ui-test
   workflow_dispatch:
 
 permissions:
@@ -57,7 +57,10 @@ jobs:
           new = r'''msgid "sphinx|'\n\nYour answer?"''' + '\n' + r'''msgstr "'\n\n당신의 답은?"'''
           if old not in text:
               raise SystemExit('Expected Sphinx translation entry was not found.')
-          Path('build/ko-build.po').write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          text = text.replace(old, new, 1)
+          if '\nmsgid "Korean"\n' not in text:
+              text += '\n\nmsgid "Korean"\nmsgstr "한국어"\n'
+          Path('build/ko-build.po').write_text(text, encoding='utf-8', newline='\n')
           PY
           "/c/Program Files/gettext-iconv/bin/msgfmt.exe" --check --check-format build/ko-build.po -o build/ko-utf8.mo
 
@@ -90,6 +93,74 @@ jobs:
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
+      - name: Patch Korean language UI test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Remove the two hard-coded main-menu font demonstration strings.
+          path = Path('src/fheroes2/game/game_mainmenu_ui.cpp')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace('#include "korean_utf8_prototype.h"\n', '', 1)
+          marker = '        // Korean font prototype: fixed UTF-8 bytes and fixed on-screen coordinates.\n'
+          start = text.find(marker)
+          end = text.find('    }\n\n    void drawEditorMainMenuScreen()', start)
+          if start < 0 or end < 0:
+              raise SystemExit('Main menu Korean prototype block was not found.')
+          text = text[:start] + text[end:]
+          path.write_text(text, encoding='utf-8', newline='\n')
+
+          # Register Korean as a game language for the normal language picker.
+          path = Path('src/fheroes2/game/game_language.h')
+          text = path.read_text(encoding='utf-8')
+          old = '''        Ukrainian,\n        Vietnamese\n    };'''
+          new = '''        Ukrainian,\n        Vietnamese,\n        Korean\n    };'''
+          if old not in text:
+              raise SystemExit('SupportedLanguage insertion point not found.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+          path = Path('src/fheroes2/gui/ui_language.cpp')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''            { "el", fheroes2::SupportedLanguage::Greek },      { "greek", fheroes2::SupportedLanguage::Greek },\n            { "eo", fheroes2::SupportedLanguage::Esperanto },  { "esperanto", fheroes2::SupportedLanguage::Esperanto } };'''
+          new = '''            { "el", fheroes2::SupportedLanguage::Greek },      { "greek", fheroes2::SupportedLanguage::Greek },\n            { "ko", fheroes2::SupportedLanguage::Korean },     { "korean", fheroes2::SupportedLanguage::Korean },\n            { "eo", fheroes2::SupportedLanguage::Esperanto },  { "esperanto", fheroes2::SupportedLanguage::Esperanto } };'''
+          if old not in text:
+              raise SystemExit('Language name map insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''                                                             SupportedLanguage::Slovak,     SupportedLanguage::Vietnamese, SupportedLanguage::Greek,\n                                                             SupportedLanguage::Esperanto };'''
+          new = '''                                                             SupportedLanguage::Slovak,     SupportedLanguage::Vietnamese, SupportedLanguage::Greek,\n                                                             SupportedLanguage::Esperanto,  SupportedLanguage::Korean };'''
+          if old not in text:
+              raise SystemExit('Supported language list insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''        case SupportedLanguage::Esperanto:\n            return _( "Esperanto" );\n        default:'''
+          new = '''        case SupportedLanguage::Esperanto:\n            return _( "Esperanto" );\n        case SupportedLanguage::Korean:\n            return _( "Korean" );\n        default:'''
+          if old not in text:
+              raise SystemExit('Language display name insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''        case SupportedLanguage::Esperanto:\n            return "eo";\n        default:'''
+          new = '''        case SupportedLanguage::Esperanto:\n            return "eo";\n        case SupportedLanguage::Korean:\n            return "ko";\n        default:'''
+          if old not in text:
+              raise SystemExit('Language abbreviation insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''        const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );\n        const SupportedLanguage resourceLanguage = getResourceLanguage();\n\n        // The original French assets replaces several ASCII special characters with language-specific characters.'''
+          new = '''        const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );\n        const SupportedLanguage resourceLanguage = getResourceLanguage();\n\n        // Korean uses the prototype Unicode glyph renderer, while ASCII punctuation and digits still use the stock font assets.\n        if ( language == SupportedLanguage::Korean ) {\n            if ( resourceLanguage == SupportedLanguage::French ) {\n                Assets::updateLanguageDependentResources( SupportedLanguage::French, false );\n            }\n            else {\n                Assets::updateLanguageDependentResources( SupportedLanguage::English, true );\n            }\n            return;\n        }\n\n        // The original French assets replaces several ASCII special characters with language-specific characters.'''
+          if old not in text:
+              raise SystemExit('Korean alphabet bypass insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          old = '''        case SupportedLanguage::English:\n            return CodePage::ASCII;'''
+          new = '''        case SupportedLanguage::English:\n        case SupportedLanguage::Korean:\n            return CodePage::ASCII;'''
+          if old not in text:
+              raise SystemExit('Korean code page insertion point not found.')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+
       - uses: microsoft/setup-msbuild@v3
 
       - name: Build fheroes2
@@ -104,7 +175,7 @@ jobs:
       - name: Upload prototype executable
         uses: actions/upload-artifact@v7
         with:
-          name: fheroes2-korean-utf8-prototype-windows-x64
+          name: fheroes2-korean-language-ui-test-windows-x64
           path: |
             build/x64/Release-SDL2/fheroes2.exe
             build/x64/Release-SDL2/*.dll
