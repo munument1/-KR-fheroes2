@@ -13,120 +13,87 @@ permissions:
 
 jobs:
   finalize:
-    name: Rebuild and validate full ko.po
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Recover and validate full Korean catalog
+      - name: Install gettext
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gettext
+
+      - name: Build ko.po from the existing Turkish catalog structure
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, bz2, gzip, re
+          import base64, bz2, json, re
 
-          candidates = [
-              Path('.github/ko_parts'),
-              Path('.github/ko_parts2'),
-              Path('.github/ko_payload2'),
-              Path('.github/ko_payload3'),
-          ]
+          payload = '''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'''
+          translations = json.loads(bz2.decompress(base64.b64decode(payload)).decode('utf-8'))
+          assert len(translations) == 3240, len(translations)
 
-          def validate(text: str) -> bool:
-              lines = text.splitlines()
-              entries = sum(1 for line in lines if line.startswith('msgid ')) - 1
-              plurals = sum(1 for line in lines if line.startswith('msgid_plural '))
-              fuzzy = sum(1 for line in lines if line.startswith('#,') and 'fuzzy' in line)
-              return (
-                  entries == 3240
-                  and plurals == 30
-                  and fuzzy == 0
-                  and 'msgid "Move the %{name} "' in text
-                  and 'msgid "Map: "' in text
-                  and 'msgid "Warrior"' in text
-                  and 'msgstr "전사"' in text
-              )
+          source = Path('files/lang/tr.po').read_text(encoding='utf-8')
+          blocks = re.split(r'\n{2,}', source.strip())
+          header_block = blocks[0]
+          entries = blocks[1:]
+          assert len(entries) == 3240, len(entries)
 
-          recovered = None
-          source = None
+          def q(s):
+              return '"' + s.replace('\\', '\\\\').replace('"', '\\"').replace('\t', '\\t').replace('\r', '\\r').replace('\n', '\\n') + '"'
 
-          for directory in candidates:
-              if not directory.exists():
-                  continue
-              parts = sorted(directory.glob('part*.b64'))
-              if not parts:
-                  continue
+          header = '''# Korean translation for fheroes2
+# Copyright (C) 2026 fheroes2 team <fhomm2@gmail.com>
+# This file is distributed under the same license as the fheroes2 package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fheroes2\\n"
+"Report-Msgid-Bugs-To: fhomm2@gmail.com\\n"
+"PO-Revision-Date: 2026-08-14 16:38+0900\\n"
+"Language-Team: Korean\\n"
+"Language: ko\\n"
+"MIME-Version: 1.0\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Transfer-Encoding: 8bit\\n"
+"Plural-Forms: nplurals=1; plural=0;\\n"'''
 
-              raw = ''.join(p.read_text(encoding='ascii', errors='ignore') for p in parts)
-              raw = re.sub(r'\s+', '', raw)
-              raw += '=' * (-len(raw) % 4)
+          out = [header]
+          for block, ko in zip(entries, translations):
+              lines = block.splitlines()
+              start = next(i for i, line in enumerate(lines) if line.startswith('msgstr'))
+              prefix = lines[:start]
+              if any(line.startswith('msgid_plural ') for line in prefix):
+                  prefix.append('msgstr[0] ' + q(ko))
+              else:
+                  prefix.append('msgstr ' + q(ko))
+              out.append('\n'.join(prefix))
 
-              try:
-                  payload = base64.b64decode(raw, validate=False)
-              except Exception as exc:
-                  print(f'{directory}: base64 decode failed: {exc}')
-                  continue
+          final = '\n\n'.join(out) + '\n'
+          Path('files/lang/ko.po').write_text(final, encoding='utf-8', newline='')
 
-              for codec, decoder in [('gzip', gzip.decompress), ('bzip2', bz2.decompress)]:
-                  try:
-                      data = decoder(payload)
-                      text = data.decode('utf-8')
-                  except Exception as exc:
-                      print(f'{directory}: {codec} failed: {exc}')
-                      continue
-
-                  if validate(text):
-                      recovered = text
-                      source = f'{directory} ({codec})'
-                      break
-                  print(f'{directory}: {codec} decoded but catalog validation failed')
-              if recovered is not None:
-                  break
-
-          if recovered is None:
-              raise SystemExit('No temporary payload reconstructed a valid 3240-entry Korean catalog')
-
-          # Normalize only the header newline escaping if necessary.
-          blocks = recovered.split('\n\n', 1)
-          if len(blocks) == 2:
-              header, body = blocks
-              header = header.replace('\\\\n"', '\\n"')
-              recovered = header + '\n\n' + body
-
-          if '"Language: ko\\n"' not in recovered:
-              raise SystemExit('Korean language header missing')
-          if '"Plural-Forms: nplurals=1; plural=0;\\n"' not in recovered:
-              raise SystemExit('Korean plural header missing')
-
-          Path('files/lang/ko.po').write_text(recovered, encoding='utf-8', newline='')
-          print(f'Recovered from {source}')
-          print('entries=3240')
-          print('plural_entries=30')
-          print('fuzzy_entries=0')
+          assert final.count('\nmsgid ') == 3240
+          assert final.count('\nmsgid_plural ') == 30
+          assert 'msgid "Move the %{name} "' in final
+          assert 'msgid "Map: "' in final
+          assert 'msgid "Warrior"\nmsgstr "전사"' in final
+          print('ko.po rebuilt: 3240 entries, 30 plurals')
           PY
 
-      - name: Validate gettext catalog
-        shell: bash
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y gettext
+          msgattrib --clear-fuzzy --no-obsolete files/lang/ko.po -o /tmp/ko.clean.po
+          mv /tmp/ko.clean.po files/lang/ko.po
           msgfmt --check --check-format files/lang/ko.po -o /tmp/ko.mo
           test -s /tmp/ko.mo
-          msgunfmt /tmp/ko.mo > /tmp/ko.roundtrip.po
-          test -s /tmp/ko.roundtrip.po
 
-      - name: Commit final catalog and remove temporary transport files
+      - name: Commit clean final catalog
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           rm -rf .github/ko_parts .github/ko_parts2 .github/ko_payload2 .github/ko_payload3
           rm -f .github/workflows/finalize_ko_po.yml
-
           git add -A
           git diff --cached --check
           git commit -m "Finalize full Korean translation catalog"
