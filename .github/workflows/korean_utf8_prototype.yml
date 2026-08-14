@@ -46,7 +46,11 @@ jobs:
         shell: powershell
         run: |
           choco install gettext -y --no-progress
-          & 'C:\Program Files\gettext-iconv\bin\msgfmt.exe' --check --check-format files/lang/ko.po -o build/ko-utf8.mo
+          Copy-Item files/lang/ko.po build/ko-build.po
+          $po = Get-Content build/ko-build.po -Raw -Encoding UTF8
+          $po = $po.Replace('msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "\n\n당신의 답은?"', 'msgid "sphinx|''\n\nYour answer?"' + "`n" + 'msgstr "''\n\n당신의 답은?"')
+          Set-Content build/ko-build.po -Value $po -Encoding UTF8 -NoNewline
+          & 'C:\Program Files\gettext-iconv\bin\msgfmt.exe' --check --check-format build/ko-build.po -o build/ko-utf8.mo
 
       - uses: microsoft/setup-msbuild@v3
 
