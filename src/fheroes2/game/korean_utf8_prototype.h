@@ -133,8 +133,8 @@ namespace fheroes2
         inline void drawMainMenuTestText( Image & output, const int32_t x, const int32_t y )
         {
             // Explicit UTF-8 byte sequences keep this independent of the compiler source-code page.
-            constexpr std::string_view decorativeText = "\\xEA" "\\xB9" "\\x80" "\\xEB" "\\x8C" "\\x80" "\\xEA" "\\xB1" "\\xB4" " " "\\xEC" "\\x9E" "\\xA5" "\\xEC" "\\x8B" "\\x9D" " " "\\xEA" "\\xB8" "\\x80" "\\xEA" "\\xBC" "\\xB4";
-            constexpr std::string_view bodyText = "\\xEA" "\\xB0" "\\x88" "\\xEB" "\\xAC" "\\xB4" "\\xEB" "\\xA6" "\\xAC" " " "\\xEA" "\\xB8" "\\xB0" "\\xEB" "\\xB3" "\\xB8" " " "\\xEA" "\\xB8" "\\x80" "\\xEA" "\\xBC" "\\xB4";
+            constexpr std::string_view decorativeText = "\xEA" "\xB9" "\x80" "\xEB" "\x8C" "\x80" "\xEA" "\xB1" "\xB4" " " "\xEC" "\x9E" "\xA5" "\xEC" "\x8B" "\x9D" " " "\xEA" "\xB8" "\x80" "\xEA" "\xBC" "\xB4";
+            constexpr std::string_view bodyText = "\xEA" "\xB0" "\x88" "\xEB" "\xAC" "\xB4" "\xEB" "\xA6" "\xAC" " " "\xEA" "\xB8" "\xB0" "\xEB" "\xB3" "\xB8" " " "\xEA" "\xB8" "\x80" "\xEA" "\xBC" "\xB4";
 
             drawText( output, x, y - 34, decorativeText, FontStyle::decorative );
             drawText( output, x, y, bodyText, FontStyle::body );
