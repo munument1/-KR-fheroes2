@@ -1,0 +1,209 @@
+name: Export Korean Translation CSV
+
+on:
+  push:
+    branches:
+      - korean-utf8-prototype
+    paths:
+      - files/lang/tr.po
+      - .github/workflows/export_translation_csv.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export-csv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Export Turkish PO to Korean translation CSV
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import ast
+          import csv
+          from pathlib import Path
+
+          src = Path('files/lang/tr.po')
+          out = Path('fheroes2_KO_translation_working_EN_TR.csv')
+          summary = Path('fheroes2_KO_translation_working_EN_TR_summary.txt')
+
+          def qvalue(text):
+              return ast.literal_eval(text.strip())
+
+          def blank_entry():
+              return {
+                  'msgctxt': '',
+                  'msgid': '',
+                  'msgid_plural': '',
+                  'msgstr': '',
+                  'msgstr_plural': {},
+                  'flags': [],
+                  'refs': [],
+                  'extracted_comments': [],
+                  'translator_comments': [],
+              }
+
+          entries = []
+          entry = blank_entry()
+          active = None
+
+          def append_active(value):
+              nonlocal_entry = entry
+              kind, index = active
+              if kind == 'msgstr_plural':
+                  nonlocal_entry['msgstr_plural'][index] = nonlocal_entry['msgstr_plural'].get(index, '') + value
+              else:
+                  nonlocal_entry[kind] += value
+
+          def flush():
+              nonlocal entry, active
+              # Skip the PO metadata header (empty msgid).
+              if entry['msgid'] or entry['msgid_plural']:
+                  entries.append(entry)
+              entry = blank_entry()
+              active = None
+
+          for raw in src.read_text(encoding='utf-8-sig').splitlines():
+              line = raw.rstrip('\n')
+              if not line.strip():
+                  flush()
+                  continue
+
+              if line.startswith('#:'):
+                  entry['refs'].extend(line[2:].strip().split())
+                  active = None
+                  continue
+              if line.startswith('#,'):
+                  entry['flags'].extend(x.strip() for x in line[2:].split(',') if x.strip())
+                  active = None
+                  continue
+              if line.startswith('#.'):
+                  entry['extracted_comments'].append(line[2:].strip())
+                  active = None
+                  continue
+              if line.startswith('#'):
+                  entry['translator_comments'].append(line[1:].strip())
+                  active = None
+                  continue
+
+              if line.startswith('msgctxt '):
+                  entry['msgctxt'] = qvalue(line[len('msgctxt '):])
+                  active = ('msgctxt', None)
+                  continue
+              if line.startswith('msgid_plural '):
+                  entry['msgid_plural'] = qvalue(line[len('msgid_plural '):])
+                  active = ('msgid_plural', None)
+                  continue
+              if line.startswith('msgid '):
+                  entry['msgid'] = qvalue(line[len('msgid '):])
+                  active = ('msgid', None)
+                  continue
+              if line.startswith('msgstr['):
+                  close = line.index(']')
+                  index = int(line[len('msgstr['):close])
+                  value = qvalue(line[close + 1:].strip())
+                  entry['msgstr_plural'][index] = value
+                  active = ('msgstr_plural', index)
+                  continue
+              if line.startswith('msgstr '):
+                  entry['msgstr'] = qvalue(line[len('msgstr '):])
+                  active = ('msgstr', None)
+                  continue
+              if line.startswith('"') and active is not None:
+                  append_active(qvalue(line))
+                  continue
+
+              raise RuntimeError(f'Unsupported PO line: {line!r}')
+
+          flush()
+
+          def split_context(text):
+              if '|' not in text:
+                  return '', text
+              prefix, visible = text.split('|', 1)
+              # fheroes2 uses short pipe prefixes as translation-context hints.
+              if prefix and '\n' not in prefix and len(prefix) <= 64:
+                  return prefix, visible
+              return '', text
+
+          fields = [
+              'row_id',
+              'context',
+              'msgctxt',
+              'msgid_raw',
+              'english',
+              'english_plural',
+              'turkish_ref',
+              'turkish_plural_0',
+              'turkish_plural_1',
+              'korean',
+              'korean_plural_0',
+              'korean_plural_1',
+              'flags',
+              'source_refs',
+              'comments',
+          ]
+
+          fuzzy_count = 0
+          untranslated_tr = 0
+          plural_count = 0
+
+          with out.open('w', encoding='utf-8-sig', newline='') as f:
+              writer = csv.DictWriter(f, fieldnames=fields)
+              writer.writeheader()
+              for i, e in enumerate(entries, 1):
+                  context_hint, english = split_context(e['msgid'])
+                  _, english_plural = split_context(e['msgid_plural']) if e['msgid_plural'] else ('', '')
+                  flags = ','.join(e['flags'])
+                  if 'fuzzy' in e['flags']:
+                      fuzzy_count += 1
+                  if e['msgid_plural']:
+                      plural_count += 1
+                  if not e['msgstr'] and not any(e['msgstr_plural'].values()):
+                      untranslated_tr += 1
+
+                  comments = ' | '.join(x for x in (e['extracted_comments'] + e['translator_comments']) if x)
+                  writer.writerow({
+                      'row_id': i,
+                      'context': context_hint,
+                      'msgctxt': e['msgctxt'],
+                      'msgid_raw': e['msgid'],
+                      'english': english,
+                      'english_plural': english_plural,
+                      'turkish_ref': e['msgstr'],
+                      'turkish_plural_0': e['msgstr_plural'].get(0, ''),
+                      'turkish_plural_1': e['msgstr_plural'].get(1, ''),
+                      'korean': '',
+                      'korean_plural_0': '',
+                      'korean_plural_1': '',
+                      'flags': flags,
+                      'source_refs': ' '.join(e['refs']),
+                      'comments': comments,
+                  })
+
+          summary.write_text(
+              '\n'.join([
+                  f'source={src}',
+                  f'entries={len(entries)}',
+                  f'plural_entries={plural_count}',
+                  f'fuzzy_entries={fuzzy_count}',
+                  f'turkish_untranslated_entries={untranslated_tr}',
+                  'encoding=UTF-8 with BOM',
+                  'korean_columns=blank',
+              ]) + '\n',
+              encoding='utf-8'
+          )
+          print(summary.read_text(encoding='utf-8'))
+          PY
+
+      - name: Upload translation CSV artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: fheroes2-KO-translation-EN-TR
+          path: |
+            fheroes2_KO_translation_working_EN_TR.csv
+            fheroes2_KO_translation_working_EN_TR_summary.txt
+          if-no-files-found: error
