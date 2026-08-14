@@ -1,4 +1,4 @@
-name: Finalize Korean PO once
+name: Finalize Korean PO Once
 
 on:
   push:
@@ -19,35 +19,99 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify and decode Korean payload
-        shell: bash
+      - name: Install gettext
         run: |
-          cat .github/ko_payload3/part*.b64 | base64 --decode > /tmp/ko_strings.json.bz2
-          bzip2 --decompress --stdout /tmp/ko_strings.json.bz2 > /tmp/ko_strings.json
-          echo "9b35eb80b3763266565072b7624310976431575d564566098632cba4419d7e1b  /tmp/ko_strings.json" | sha256sum -c -
-
-      - name: Generate Korean PO
-        shell: bash
-        run: python3 .github/finalize_ko.py
-
-      - name: Validate gettext catalog
-        shell: bash
-        run: |
-          sudo apt-get update
+          sudo apt-get update -qq
           sudo apt-get install -y gettext
+
+      - name: Build and validate complete ko.po
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          import bz2
+          import json
+          import re
+
+          transport = Path('.github/workflows/finalize_ko_po.yml').read_text(encoding='utf-8')
+          match = re.search(r"payload = '''([A-Za-z0-9+/=]+)'''", transport)
+          if not match:
+              raise SystemExit('Korean translation payload not found')
+
+          translations = json.loads(bz2.decompress(base64.b64decode(match.group(1))).decode('utf-8'))
+          if len(translations) != 3240:
+              raise SystemExit(f'Unexpected translation count: {len(translations)}')
+
+          source = Path('files/lang/tr.po').read_text(encoding='utf-8')
+          blocks = re.split(r'\n{2,}', source.strip())
+          source_entries = blocks[1:]
+          if len(source_entries) != 3240:
+              raise SystemExit(f'Unexpected source entry count: {len(source_entries)}')
+
+          def quote_po(value):
+              value = value.replace('\\', '\\\\').replace('"', '\\"')
+              value = value.replace('\t', '\\t').replace('\r', '\\r').replace('\n', '\\n')
+              return '"' + value + '"'
+
+          header_lines = [
+              '# Korean translation for fheroes2',
+              '# Copyright (C) 2026 fheroes2 team <fhomm2@gmail.com>',
+              '# This file is distributed under the same license as the fheroes2 package.',
+              '#',
+              'msgid ""',
+              'msgstr ""',
+              '"Project-Id-Version: fheroes2\\n"',
+              '"Report-Msgid-Bugs-To: fhomm2@gmail.com\\n"',
+              '"PO-Revision-Date: 2026-08-14 16:38+0900\\n"',
+              '"Language-Team: Korean\\n"',
+              '"Language: ko\\n"',
+              '"MIME-Version: 1.0\\n"',
+              '"Content-Type: text/plain; charset=UTF-8\\n"',
+              '"Content-Transfer-Encoding: 8bit\\n"',
+              '"Plural-Forms: nplurals=1; plural=0;\\n"',
+          ]
+
+          output = ['\n'.join(header_lines)]
+          plural_count = 0
+          for block, korean in zip(source_entries, translations):
+              lines = block.splitlines()
+              msgstr_index = next(i for i, line in enumerate(lines) if line.startswith('msgstr'))
+              kept = lines[:msgstr_index]
+              kept = [line for line in kept if not (line.startswith('#,') and 'fuzzy' in line)]
+              if any(line.startswith('msgid_plural ') for line in kept):
+                  plural_count += 1
+                  kept.append('msgstr[0] ' + quote_po(korean))
+              else:
+                  kept.append('msgstr ' + quote_po(korean))
+              output.append('\n'.join(kept))
+
+          final = '\n\n'.join(output) + '\n'
+          Path('files/lang/ko.po').write_text(final, encoding='utf-8', newline='')
+
+          entry_count = sum(1 for line in final.splitlines() if line.startswith('msgid ')) - 1
+          if entry_count != 3240 or plural_count != 30:
+              raise SystemExit(f'Catalog count mismatch: entries={entry_count}, plurals={plural_count}')
+          if 'msgid "Move the %{name} "' not in final or 'msgid "Map: "' not in final:
+              raise SystemExit('Trailing-space source keys were not preserved')
+          if 'msgid "Warrior"\nmsgstr "전사"' not in final:
+              raise SystemExit('Korean translation alignment check failed')
+
+          print(f'entries={entry_count}')
+          print(f'plural_entries={plural_count}')
+          PY
+
           msgfmt --check --check-format files/lang/ko.po -o /tmp/ko.mo
           test -s /tmp/ko.mo
-          msgunfmt /tmp/ko.mo > /tmp/ko.roundtrip.po
-          test -s /tmp/ko.roundtrip.po
-          echo "ko.mo bytes=$(stat -c%s /tmp/ko.mo)"
 
-      - name: Commit catalog and remove temporary payloads
+      - name: Commit final ko.po and remove temporary transport
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add files/lang/ko.po
-          git rm -rf --ignore-unmatch .github/ko_parts .github/ko_parts2 .github/ko_payload2 .github/ko_payload3 .github/finalize_ko.py
+          rm -rf .github/ko_parts .github/ko_parts2 .github/ko_payload2 .github/ko_payload3
+          rm -f .github/finalize_ko.py .github/workflows/finalize_ko_po.yml .github/workflows/finalize_ko_po_once.yml
+          git add -A
           git diff --cached --check
           git commit -m "Finalize full Korean translation catalog"
           git push origin HEAD:korean-utf8-prototype
