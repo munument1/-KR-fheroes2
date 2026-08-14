@@ -24,7 +24,26 @@ jobs:
       - name: Rebuild full Korean catalog
         shell: bash
         run: |
-          cat .github/ko_payload3/part*.b64 | base64 --decode | bzip2 --decompress > files/lang/ko.po
+          cat .github/ko_parts/part*.b64 | base64 --decode | gzip --decompress > files/lang/ko.po
+          echo "afbe8abb0b3f45fadbdcd09a04d5bdb0c12b3436469041ac647236bd92937737  files/lang/ko.po" | sha256sum -c -
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('files/lang/ko.po')
+          lines = path.read_text(encoding='utf-8').splitlines(True)
+          fixed = []
+          in_header = True
+          for line in lines:
+              if in_header and line.startswith('"'):
+                  line = line.replace('\\\\n', '\\n')
+              fixed.append(line)
+              if in_header and line.strip() == '' and len(fixed) > 6:
+                  in_header = False
+          path.write_text(''.join(fixed), encoding='utf-8', newline='')
+          PY
+
+          echo "7a805bdebd476952cbc2a27cb68c6f792c054ca6c40749bb7109921ad86b7b85  files/lang/ko.po" | sha256sum -c -
 
           python3 - <<'PY'
           from pathlib import Path
