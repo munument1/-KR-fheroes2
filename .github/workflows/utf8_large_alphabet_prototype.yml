@@ -26,6 +26,11 @@ jobs:
           sudo apt-get -y update
           sudo apt-get -y install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev gettext ninja-build
 
+      - name: Build UTF-8 Korean catalog
+        run: |
+          make -C files/lang ko.mo
+          msgunfmt files/lang/ko.mo | grep -q 'charset=UTF-8'
+
       - name: Configure
         run: |
           cmake -B build -G Ninja \
@@ -36,3 +41,48 @@ jobs:
 
       - name: Build
         run: cmake --build build
+
+  windows-x64:
+    name: Windows x64 UTF-8 prototype build
+    needs: linux-sdl2
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install fheroes2 dependencies
+        run: script/windows/install_packages.bat
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Build UTF-8 Korean catalog
+        run: |
+          python -m pip install --disable-pip-version-check polib
+          mkdir -p build/x64/Release-SDL2/files/lang
+          python - <<'PY'
+          import polib
+
+          po = polib.pofile('files/lang/ko.po', encoding='utf-8')
+          po.save_as_mofile('build/x64/Release-SDL2/files/lang/ko.mo')
+          PY
+
+      - uses: microsoft/setup-msbuild@v3
+
+      - name: Build fheroes2
+        run: MSBuild.exe fheroes2-vs2019.vcxproj /property:Platform=x64 /property:Configuration=Release-SDL2
+
+      - name: Upload Windows prototype
+        uses: actions/upload-artifact@v7
+        with:
+          name: fheroes2-utf8-large-alphabet-windows-x64
+          path: |
+            build/x64/Release-SDL2/fheroes2.exe
+            build/x64/Release-SDL2/*.dll
+            build/x64/Release-SDL2/files/lang/ko.mo
+          if-no-files-found: error
