@@ -45,7 +45,7 @@ jobs:
             build/Galmuri11.ttf \
             src/fheroes2/gui/ui_large_alphabet_generated.h \
             --po files/lang/ko.po \
-            --include-hangul
+            --range AC00:D7A3
           python - <<'PY'
           import re
           from pathlib import Path
@@ -134,7 +134,7 @@ jobs:
             build/Galmuri11.ttf \
             src/fheroes2/gui/ui_large_alphabet_generated.h \
             --po files/lang/ko.po \
-            --include-hangul
+            --range AC00:D7A3
 
       - name: Build UTF-8 Korean catalog
         run: |
