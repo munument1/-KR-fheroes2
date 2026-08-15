@@ -67,6 +67,10 @@ ro.mo: ro.po
 eo.mo: eo.po
 	$(call MSGFMT,ISO-8859-3)
 
+# Korean uses UTF-8
+ko.mo: ko.po
+	msgfmt --check --check-format $< -o $@
+
 # All other languages: drop accents transliterated with `"` (which breaks translation file format)
 # and transliterate the rest with default iconv rules
 %.mo: %.po
