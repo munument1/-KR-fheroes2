@@ -30,6 +30,7 @@
 
 #include "image.h"
 #include "math_base.h"
+#include "utf8.h"
 
 namespace fheroes2
 {
@@ -398,6 +399,9 @@ namespace fheroes2
             return _spaceCharWidth;
         }
 
+        // Reset the streaming UTF-8 state. This is a no-op for legacy code pages.
+        void reset() const;
+
     private:
         // Returns true if character is valid for the current code page, excluding space (' ') and new line ('\n').
         bool _isValid( const uint8_t character ) const
@@ -410,6 +414,9 @@ namespace fheroes2
         const FontType _fontType;
         const uint32_t _charLimit;
         const int32_t _spaceCharWidth;
+        const bool _isUtf8;
+        mutable utf8::StreamDecoder _spriteDecoder;
+        mutable utf8::StreamDecoder _widthDecoder;
     };
 
     // This function is usually useful for text generation on buttons as button font is a separate set of sprites.
