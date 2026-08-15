@@ -61,6 +61,11 @@ replace_once(
 # Scheduled map/campaign events shown at the beginning of a turn.
 replace_once(
     "src/fheroes2/game/game_startgame.cpp",
+    "            const auto & language = Settings::Get().getCurrentMapInfo().getSupportedLanguage();\n\n",
+    "",
+)
+replace_once(
+    "src/fheroes2/game/game_startgame.cpp",
     "fheroes2::Text( event.title, fheroes2::FontType::normalYellow(), language )",
     "fheroes2::Text( _( event.title ), fheroes2::FontType::normalYellow() )",
 )
