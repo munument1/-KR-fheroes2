@@ -1,0 +1,19 @@
+# Korean UTF-8 large-alphabet prototype catalog.
+# This intentionally contains only a tiny bootstrap translation set so the
+# renderer can be validated before the complete Korean glyph data is added.
+msgid ""
+msgstr ""
+"Project-Id-Version: fheroes2 UTF-8 large-alphabet prototype\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Uses only glyphs present in the bootstrap large-alphabet provider.
+msgid "Korean"
+msgstr "갈무리 글꼴"
+
+#. Uses the remaining bootstrap glyphs.
+msgid "Default"
+msgstr "기본"
