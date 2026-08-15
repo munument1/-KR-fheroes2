@@ -54,12 +54,13 @@ def main() -> None:
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
+    # Galmuri11 is designed around a native 12px bitmap cell. Use that native
+    # size for both small and normal Korean UI text instead of downscaling it.
+    # Large text is an exact 2x integer scale so the pixel grid stays crisp.
     specs = [
-        ("small", 9, 9, 10),
-        ("normal", 11, 11, 11),
-        # Large Korean text uses Galmuri in the first full-text prototype.
-        # The decorative Solmoe KimDaeGeon path stays a separate follow-up.
-        ("large", 22, 22, 24),
+        ("small", 12, 12, 12),
+        ("normal", 12, 12, 12),
+        ("large", 24, 24, 24),
     ]
 
     blocks: list[str] = []
