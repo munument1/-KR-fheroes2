@@ -47,5 +47,9 @@
     <Import Project="VisualStudio\SDL2.props" />
     <Import Project="VisualStudio\fheroes2\Release.props" />
   </ImportGroup>
+  <ItemGroup>
+    <ClCompile Include="src\engine\utf8.cpp" />
+    <ClCompile Include="src\fheroes2\gui\ui_large_alphabet.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
