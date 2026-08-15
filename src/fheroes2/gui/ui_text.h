@@ -30,12 +30,12 @@
 
 #include "image.h"
 #include "math_base.h"
+#include "translations.h"
+#include "ui_language.h"
 #include "utf8.h"
 
 namespace fheroes2
 {
-    enum class SupportedLanguage : uint8_t;
-
     enum class FontSize : uint8_t
     {
         SMALL,
@@ -203,10 +203,9 @@ namespace fheroes2
         }
 
         Text( std::string text, const FontType fontType, const std::optional<SupportedLanguage> language )
-            : _text( std::move( text ) )
-            , _fontType( fontType )
+            : _fontType( fontType )
         {
-            _language = language;
+            _setLanguageAwareText( std::move( text ), language );
         }
 
         Text( const Text & text ) = default;
@@ -243,9 +242,8 @@ namespace fheroes2
 
         void set( std::string text, const FontType fontType, const std::optional<SupportedLanguage> language )
         {
-            _text = std::move( text );
             _fontType = fontType;
-            _language = language;
+            _setLanguageAwareText( std::move( text ), language );
         }
 
         void fitToOneRow( const int32_t maxWidth ) override;
@@ -274,6 +272,25 @@ namespace fheroes2
         FontType _fontType;
 
         bool _keepLineTrailingSpaces{ false };
+
+    private:
+        void _setLanguageAwareText( std::string text, const std::optional<SupportedLanguage> language )
+        {
+            // Embedded map strings carry their source language so the legacy renderer can temporarily switch code pages.
+            // A UTF-8 UI should instead use a translated catalog entry when one exists. If no translation exists,
+            // keep the source-language override so legacy non-ASCII map text still renders correctly.
+            if ( language && getCodePage( getCurrentLanguage() ) == CodePage::UTF8 ) {
+                const char * translatedText = _( text );
+                if ( translatedText != nullptr && text != translatedText ) {
+                    _text = translatedText;
+                    _language = std::nullopt;
+                    return;
+                }
+            }
+
+            _text = std::move( text );
+            _language = language;
+        }
     };
 
     class TextInput final : public Text
