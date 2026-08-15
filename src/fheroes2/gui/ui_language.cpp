@@ -69,6 +69,7 @@ namespace
             { "sk", fheroes2::SupportedLanguage::Slovak },     { "slovak", fheroes2::SupportedLanguage::Slovak },
             { "vi", fheroes2::SupportedLanguage::Vietnamese }, { "vietnamese", fheroes2::SupportedLanguage::Vietnamese },
             { "el", fheroes2::SupportedLanguage::Greek },      { "greek", fheroes2::SupportedLanguage::Greek },
+            { "ko", fheroes2::SupportedLanguage::Korean },     { "korean", fheroes2::SupportedLanguage::Korean },
             { "eo", fheroes2::SupportedLanguage::Esperanto },  { "esperanto", fheroes2::SupportedLanguage::Esperanto } };
 }
 
@@ -128,7 +129,7 @@ namespace fheroes2
                                                              SupportedLanguage::Swedish,    SupportedLanguage::Turkish,    SupportedLanguage::Dutch,
                                                              SupportedLanguage::Hungarian,  SupportedLanguage::Czech,      SupportedLanguage::Danish,
                                                              SupportedLanguage::Slovak,     SupportedLanguage::Vietnamese, SupportedLanguage::Greek,
-                                                             SupportedLanguage::Esperanto };
+                                                             SupportedLanguage::Esperanto,  SupportedLanguage::Korean };
 
         for ( const SupportedLanguage language : possibleLanguages ) {
             if ( language != resourceLanguage ) {
@@ -208,6 +209,8 @@ namespace fheroes2
             return _( "Greek" );
         case SupportedLanguage::Esperanto:
             return _( "Esperanto" );
+        case SupportedLanguage::Korean:
+            return _( "Korean" );
         default:
             // Did you add a new language? Please add the code to handle it.
             assert( 0 );
@@ -264,6 +267,8 @@ namespace fheroes2
             return "el";
         case SupportedLanguage::Esperanto:
             return "eo";
+        case SupportedLanguage::Korean:
+            return "ko";
         default:
             // Did you add a new language? Please add the code to handle it.
             assert( 0 );
@@ -292,6 +297,18 @@ namespace fheroes2
     {
         const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );
         const SupportedLanguage resourceLanguage = getResourceLanguage();
+
+        // Large-alphabet UTF-8 languages render non-ASCII glyphs outside the legacy ICN code-page tables.
+        // Keep the same stock ASCII-compatible font resources that the English UI would use.
+        if ( getCodePage( language ) == CodePage::UTF8 ) {
+            if ( resourceLanguage == SupportedLanguage::French ) {
+                Assets::updateLanguageDependentResources( SupportedLanguage::French, false );
+            }
+            else {
+                Assets::updateLanguageDependentResources( SupportedLanguage::English, true );
+            }
+            return;
+        }
 
         // The original French assets replaces several ASCII special characters with language-specific characters.
         // In the engine we use CP1252 for these characters.
@@ -350,6 +367,8 @@ namespace fheroes2
             return CodePage::ISO8859_16;
         case SupportedLanguage::Esperanto:
             return CodePage::ISO8859_3;
+        case SupportedLanguage::Korean:
+            return CodePage::UTF8;
         default:
             // Add new language handling code!
             assert( 0 );
