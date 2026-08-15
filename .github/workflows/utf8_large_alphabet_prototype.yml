@@ -1,0 +1,38 @@
+name: UTF-8 Large Alphabet Prototype
+
+on:
+  push:
+    branches:
+      - utf8-large-alphabet-prototype
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-sdl2:
+    name: Linux SDL2 prototype build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev gettext ninja-build
+
+      - name: Configure
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -DENABLE_IMAGE=ON \
+            -DENABLE_TOOLS=ON
+
+      - name: Build
+        run: cmake --build build
