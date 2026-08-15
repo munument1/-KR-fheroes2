@@ -22,14 +22,14 @@
 
 namespace
 {
-    constexpr std::string_view hangulHan{ "\xED\x95\x9C", 3 };
-    constexpr std::string_view cjkMiddle{ "\xE4\xB8\xAD", 3 };
+    constexpr std::string_view greekOmega{ "\xCE\xA9", 2 };
+    constexpr std::string_view euroSign{ "\xE2\x82\xAC", 3 };
     constexpr std::string_view grinningFace{ "\xF0\x9F\x98\x80", 4 };
     constexpr std::string_view invalidSurrogate{ "\xED\xA0\x80", 3 };
 
     static_assert( fheroes2::utf8::decode( "A", 0 ).codePoint == 0x41U );
-    static_assert( fheroes2::utf8::decode( hangulHan, 0 ).codePoint == 0xD55CU );
-    static_assert( fheroes2::utf8::decode( cjkMiddle, 0 ).codePoint == 0x4E2DU );
+    static_assert( fheroes2::utf8::decode( greekOmega, 0 ).codePoint == 0x03A9U );
+    static_assert( fheroes2::utf8::decode( euroSign, 0 ).codePoint == 0x20ACU );
     static_assert( fheroes2::utf8::decode( grinningFace, 0 ).codePoint == 0x1F600U );
     static_assert( !fheroes2::utf8::decode( invalidSurrogate, 0 ).valid );
 
@@ -37,18 +37,18 @@ namespace
     {
         fheroes2::utf8::StreamDecoder decoder;
 
-        const fheroes2::utf8::StreamResult first = decoder.consume( 0xEDU );
+        const fheroes2::utf8::StreamResult first = decoder.consume( 0xE2U );
         if ( !first.started || first.complete || first.byteCount != 3 || !first.valid ) {
             return false;
         }
 
-        const fheroes2::utf8::StreamResult second = decoder.consume( 0x95U );
+        const fheroes2::utf8::StreamResult second = decoder.consume( 0x82U );
         if ( second.started || second.complete || second.byteCount != 3 || !second.valid ) {
             return false;
         }
 
-        const fheroes2::utf8::StreamResult third = decoder.consume( 0x9CU );
-        return !third.started && third.complete && third.valid && third.byteCount == 3 && third.codePoint == 0xD55CU && !decoder.hasPendingSequence();
+        const fheroes2::utf8::StreamResult third = decoder.consume( 0xACU );
+        return !third.started && third.complete && third.valid && third.byteCount == 3 && third.codePoint == 0x20ACU && !decoder.hasPendingSequence();
     }
 
     constexpr bool verifyInvalidStreamingSequence()
