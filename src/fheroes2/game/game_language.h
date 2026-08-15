@@ -50,7 +50,8 @@ namespace fheroes2
         Swedish,
         Turkish,
         Ukrainian,
-        Vietnamese
+        Vietnamese,
+        Korean
     };
 
     enum class CodePage : uint8_t
