@@ -89,6 +89,9 @@ jobs:
           PY
           msgunfmt files/lang/ko.mo | grep -q 'charset=UTF-8'
 
+      - name: Enable gettext for embedded map text
+        run: python script/patch_utf8_map_gettext.py
+
       - name: Configure
         run: |
           cmake -B build -G Ninja \
@@ -163,6 +166,9 @@ jobs:
           po.save_as_mofile('build/x64/Release-SDL2/files/lang/ko.mo')
           print(f'Built UTF-8 Korean catalog with {len(po)} entries.')
           PY
+
+      - name: Enable gettext for embedded map text
+        run: python script/patch_utf8_map_gettext.py
 
       - uses: microsoft/setup-msbuild@v3
 
