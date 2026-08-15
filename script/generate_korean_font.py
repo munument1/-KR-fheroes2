@@ -20,18 +20,24 @@ def build_rows(font_path: Path, point_size: int, width: int, height: int) -> byt
 
     for codepoint in range(HANGUL_FIRST, HANGUL_FIRST + HANGUL_COUNT):
         ch = chr(codepoint)
-        image = Image.new("L", (width, height), 0)
+
+        # Galmuri is a pixel font. Render directly to a 1-bit target so
+        # FreeType/Pillow uses monochrome rasterization rather than first
+        # producing antialiased grayscale pixels and thresholding them later.
+        # Keeping every glyph on integer coordinates preserves the intended
+        # pixel grid and prevents strokes from looking swollen or smeared.
+        image = Image.new("1", (width, height), 0)
         draw = ImageDraw.Draw(image)
         bbox = font.getbbox(ch)
         x = -bbox[0]
         y = -bbox[1]
-        draw.text((x, y), ch, font=font, fill=255)
+        draw.text((x, y), ch, font=font, fill=1, stroke_width=0)
 
         pixels = image.load()
         for row_y in range(height):
             bits = 0
             for x_pos in range(width):
-                if pixels[x_pos, row_y] >= 128:
+                if pixels[x_pos, row_y]:
                     bits |= 1 << x_pos
             output.extend(struct.pack("<I", bits))
 
@@ -48,12 +54,13 @@ def main() -> None:
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
+    # Galmuri11 is designed around a native 12px bitmap cell. Use that native
+    # size for both small and normal Korean UI text instead of downscaling it.
+    # Large text is an exact 2x integer scale so the pixel grid stays crisp.
     specs = [
-        ("small", 9, 9, 10),
-        ("normal", 11, 11, 11),
-        # Large Korean text uses Galmuri in the first full-text prototype.
-        # The decorative Solmoe KimDaeGeon path stays a separate follow-up.
-        ("large", 22, 22, 24),
+        ("small", 12, 12, 12),
+        ("normal", 12, 12, 12),
+        ("large", 24, 24, 24),
     ]
 
     blocks: list[str] = []
