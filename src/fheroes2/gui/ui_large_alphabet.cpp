@@ -171,13 +171,6 @@ namespace
 
         return static_cast<size_t>( std::distance( codePoints.begin(), iter ) );
     }
-#else
-    int32_t getFallbackAdvance( const fheroes2::FontType & fontType )
-    {
-        constexpr int32_t baseAdvance = 12;
-        return fontType.size == fheroes2::FontSize::LARGE ? baseAdvance * 2 : baseAdvance;
-    }
-#endif
 
     uint8_t getForegroundColor( const fheroes2::FontType & fontType )
     {
@@ -202,6 +195,13 @@ namespace
     {
         return static_cast<uint64_t>( codePoint ) | ( static_cast<uint64_t>( fontType.size ) << 32 ) | ( static_cast<uint64_t>( fontType.color ) << 40 );
     }
+#else
+    int32_t getFallbackAdvance( const fheroes2::FontType & fontType )
+    {
+        constexpr int32_t baseAdvance = 12;
+        return fontType.size == fheroes2::FontSize::LARGE ? baseAdvance * 2 : baseAdvance;
+    }
+#endif
 }
 
 namespace fheroes2::largeAlphabet
