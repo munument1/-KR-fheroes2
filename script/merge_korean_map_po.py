@@ -31,11 +31,15 @@ def main() -> None:
     added = 0
     overlaps = 0
 
-    with args.map_csv.open("r", encoding="utf-8-sig", newline="") as handle:
+    with args.map_csv.open("r", encoding="utf-8-sig", errors="replace", newline="") as handle:
         reader = csv.DictReader(handle)
         required = {"source_text", "korean"}
         if not required.issubset(reader.fieldnames or []):
-            raise SystemExit(f"Map CSV is missing required columns: {sorted(required)}")
+            sample = args.map_csv.read_text(encoding="utf-8-sig", errors="replace")[:500].replace("\n", "\\n")
+            raise SystemExit(
+                f"Map CSV is missing required columns: {sorted(required)}; "
+                f"fieldnames={reader.fieldnames!r}; first500={sample!r}"
+            )
 
         rows = list(reader)
 
@@ -54,7 +58,6 @@ def main() -> None:
         if entry is not None:
             overlaps += 1
             if entry.msgid_plural:
-                # A dynamic map string cannot safely replace a plural catalog entry.
                 continue
             if entry.msgstr and entry.msgstr != msgstr:
                 raise SystemExit(
