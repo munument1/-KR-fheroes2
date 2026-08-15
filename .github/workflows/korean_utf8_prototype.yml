@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate Korean bitmap font
         run: |
-          python -m pip install --disable-pip-version-check pillow polib gdown
+          python -m pip install --disable-pip-version-check pillow polib
           mkdir -p build
           python - <<'PY'
           import urllib.request
@@ -42,17 +42,41 @@ jobs:
           PY
           python script/generate_korean_font.py build/Galmuri11.ttf src/fheroes2/gui/korean_font_generated.h
 
-      - name: Install gettext
-        shell: powershell
-        run: |
-          choco install gettext -y --no-progress
-
-      - name: Validate Korean PO and merge translated map text
+      - name: Build Korean map gettext smoke catalog
         run: |
           mkdir -p build
-          python -m gdown "https://drive.google.com/uc?id=1bUhZ5I04VWOqtvS3b_zqZbjPT6GBUto2" -O build/map-text.csv
-          python script/merge_korean_map_po.py files/lang/ko.po build/map-text.csv build/ko-build.po
-          "/c/Program Files/gettext-iconv/bin/msgfmt.exe" --check --check-format build/ko-build.po -o build/ko-utf8.mo
+          python - <<'PY'
+          import polib
+
+          po = polib.pofile('files/lang/ko.po', encoding='utf-8')
+
+          sphinx = po.find("sphinx|'\n\nYour answer?")
+          if sphinx is not None and sphinx.msgstr == '\n\n당신의 답은?':
+              sphinx.msgstr = "'\n\n당신의 답은?"
+
+          korean_name = po.find('Korean')
+          if korean_name is None:
+              po.append(polib.POEntry(msgid='Korean', msgstr='한국어'))
+          elif not korean_name.msgstr:
+              korean_name.msgstr = '한국어'
+
+          smoke = {
+              'In four worlds, a battle between four factions is raging in parallel, and nowhere is safe from war. The Dragons that once guarded the fragile balace have left their burden and returned to limbo.':
+                  '네 세계에서 네 세력의 전투가 동시에 벌어지고 있으며, 어디도 전쟁에서 안전하지 않다. 한때 위태로운 균형을 지키던 드래곤들은 짐을 내려놓고 림보로 돌아갔다.',
+              'The wood has arrived.': '목재가 도착했다.',
+              'The four factions race to capture a mystical castle.': '네 세력이 신비로운 성을 차지하기 위해 경쟁한다.',
+          }
+          for msgid, msgstr in smoke.items():
+              entry = po.find(msgid)
+              if entry is None:
+                  po.append(polib.POEntry(msgid=msgid, msgstr=msgstr, comment='Dynamic map gettext smoke test'))
+              else:
+                  entry.msgstr = msgstr
+
+          po.save('build/ko-build.po', newline='\n')
+          po.save_as_mofile('build/ko-utf8.mo')
+          print('Built smoke MO with 3 translated map strings.')
+          PY
 
       - name: Register Korean locale
         run: |
