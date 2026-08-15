@@ -20,17 +20,158 @@
 
 #include "ui_large_alphabet.h"
 
+#include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <map>
+#include <string_view>
 #include <utility>
+#include <vector>
+
+#include <zlib.h>
 
 #include "image.h"
 #include "ui_text.h"
 
+#if __has_include( "ui_large_alphabet_generated.h" )
+#include "ui_large_alphabet_generated.h"
+#define FHEROES2_HAS_GENERATED_LARGE_ALPHABET 1
+#else
+#define FHEROES2_HAS_GENERATED_LARGE_ALPHABET 0
+#endif
+
 namespace
 {
+#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+    struct FontData
+    {
+        int32_t width;
+        int32_t height;
+        int32_t advance;
+        size_t uncompressedSize;
+        std::string_view compressedBase64;
+    };
+
+    std::vector<uint8_t> decodeBase64( const std::string_view input )
+    {
+        static const std::array<int8_t, 256> table = []() {
+            std::array<int8_t, 256> output{};
+            output.fill( -1 );
+            constexpr std::string_view alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            for ( size_t i = 0; i < alphabet.size(); ++i ) {
+                output[static_cast<uint8_t>( alphabet[i] )] = static_cast<int8_t>( i );
+            }
+            return output;
+        }();
+
+        std::vector<uint8_t> output;
+        output.reserve( input.size() * 3 / 4 );
+
+        uint32_t accumulator = 0;
+        int bits = 0;
+        for ( const unsigned char c : input ) {
+            if ( c == '=' ) {
+                break;
+            }
+
+            const int8_t value = table[c];
+            if ( value < 0 ) {
+                continue;
+            }
+
+            accumulator = ( accumulator << 6 ) | static_cast<uint32_t>( value );
+            bits += 6;
+            if ( bits >= 8 ) {
+                bits -= 8;
+                output.push_back( static_cast<uint8_t>( ( accumulator >> bits ) & 0xFFU ) );
+            }
+        }
+
+        return output;
+    }
+
+    std::vector<uint32_t> inflateRows( const FontData & data )
+    {
+        const std::vector<uint8_t> compressed = decodeBase64( data.compressedBase64 );
+        std::vector<uint8_t> raw( data.uncompressedSize );
+        uLongf outputSize = static_cast<uLongf>( raw.size() );
+
+        const int result = uncompress( raw.data(), &outputSize, compressed.data(), static_cast<uLong>( compressed.size() ) );
+        assert( result == Z_OK && outputSize == raw.size() );
+        if ( result != Z_OK || outputSize != raw.size() ) {
+            return {};
+        }
+
+        std::vector<uint32_t> rows;
+        rows.reserve( raw.size() / 4 );
+        for ( size_t offset = 0; offset + 3 < raw.size(); offset += 4 ) {
+            rows.push_back( static_cast<uint32_t>( raw[offset] ) | ( static_cast<uint32_t>( raw[offset + 1] ) << 8 )
+                            | ( static_cast<uint32_t>( raw[offset + 2] ) << 16 ) | ( static_cast<uint32_t>( raw[offset + 3] ) << 24 ) );
+        }
+
+        return rows;
+    }
+
+    const FontData & getFontData( const fheroes2::FontType & fontType )
+    {
+        using namespace fheroes2::largeAlphabetGenerated;
+
+        static const FontData small{ smallWidth, smallHeight, smallAdvance, smallRawSize, smallBase64 };
+        static const FontData normal{ normalWidth, normalHeight, normalAdvance, normalRawSize, normalBase64 };
+        static const FontData large{ largeWidth, largeHeight, largeAdvance, largeRawSize, largeBase64 };
+
+        switch ( fontType.size ) {
+        case fheroes2::FontSize::SMALL:
+            return small;
+        case fheroes2::FontSize::LARGE:
+            return large;
+        case fheroes2::FontSize::NORMAL:
+        case fheroes2::FontSize::BUTTON_RELEASED:
+        case fheroes2::FontSize::BUTTON_PRESSED:
+            return normal;
+        default:
+            assert( 0 );
+            return normal;
+        }
+    }
+
+    const std::vector<uint32_t> & getRows( const fheroes2::FontType & fontType )
+    {
+        using namespace fheroes2::largeAlphabetGenerated;
+
+        static const std::vector<uint32_t> smallRows = inflateRows( FontData{ smallWidth, smallHeight, smallAdvance, smallRawSize, smallBase64 } );
+        static const std::vector<uint32_t> normalRows = inflateRows( FontData{ normalWidth, normalHeight, normalAdvance, normalRawSize, normalBase64 } );
+        static const std::vector<uint32_t> largeRows = inflateRows( FontData{ largeWidth, largeHeight, largeAdvance, largeRawSize, largeBase64 } );
+
+        switch ( fontType.size ) {
+        case fheroes2::FontSize::SMALL:
+            return smallRows;
+        case fheroes2::FontSize::LARGE:
+            return largeRows;
+        case fheroes2::FontSize::NORMAL:
+        case fheroes2::FontSize::BUTTON_RELEASED:
+        case fheroes2::FontSize::BUTTON_PRESSED:
+            return normalRows;
+        default:
+            assert( 0 );
+            return normalRows;
+        }
+    }
+
+    size_t findGlyphIndex( const uint32_t codePoint )
+    {
+        using namespace fheroes2::largeAlphabetGenerated;
+
+        const auto iter = std::lower_bound( codePoints.begin(), codePoints.end(), codePoint );
+        if ( iter == codePoints.end() || *iter != codePoint ) {
+            return glyphCount;
+        }
+
+        return static_cast<size_t>( std::distance( codePoints.begin(), iter ) );
+    }
+#else
     constexpr int32_t baseGlyphWidth = 11;
     constexpr int32_t baseGlyphHeight = 13;
 
@@ -40,9 +181,9 @@ namespace
         std::array<uint32_t, baseGlyphHeight> rows;
     };
 
-    // A deliberately small bootstrap set. The provider API is generic; the
-    // complete language-specific glyph data will be generated separately once
-    // the UTF-8 text path is proven to work without changing legacy code pages.
+    // A small built-in bootstrap set keeps the branch buildable even when the
+    // generated header is absent. CI and release builds generate the complete
+    // large alphabet before compiling.
     constexpr std::array<BitmapGlyph, 7> prototypeGlyphs = { {
         { 0xAC08U, { 0x000U, 0x11FU, 0x100U, 0x300U, 0x110U, 0x10FU, 0x1FEU, 0x100U, 0x1FEU, 0x002U, 0x1FEU, 0x000U, 0x000U } },
         { 0xAE00U, { 0x000U, 0x1FEU, 0x100U, 0x100U, 0x100U, 0x3FFU, 0x000U, 0x100U, 0x1FEU, 0x002U, 0x1FEU, 0x000U, 0x000U } },
@@ -68,6 +209,7 @@ namespace
     {
         return fontType.size == fheroes2::FontSize::LARGE ? 2 : 1;
     }
+#endif
 
     uint8_t getForegroundColor( const fheroes2::FontType & fontType )
     {
@@ -98,12 +240,20 @@ namespace fheroes2::largeAlphabet
 {
     bool isGlyphAvailable( const uint32_t codePoint )
     {
+#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+        return findGlyphIndex( codePoint ) < largeAlphabetGenerated::glyphCount;
+#else
         return findGlyph( codePoint ) != nullptr;
+#endif
     }
 
     int32_t getAdvance( const FontType & fontType )
     {
+#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+        return getFontData( fontType ).advance;
+#else
         return baseGlyphWidth * getScale( fontType );
+#endif
     }
 
     const Sprite & getAdvanceSprite( const FontType & fontType )
@@ -137,10 +287,17 @@ namespace fheroes2::largeAlphabet
 
     const Sprite & getGlyphSprite( const uint32_t codePoint, const FontType & fontType )
     {
+#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+        const size_t glyphIndex = findGlyphIndex( codePoint );
+        if ( glyphIndex >= largeAlphabetGenerated::glyphCount ) {
+            return getZeroAdvanceSprite();
+        }
+#else
         const BitmapGlyph * glyphData = findGlyph( codePoint );
         if ( glyphData == nullptr ) {
             return getZeroAdvanceSprite();
         }
+#endif
 
         static std::map<uint64_t, Sprite> cache;
         const uint64_t key = makeCacheKey( codePoint, fontType );
@@ -148,6 +305,38 @@ namespace fheroes2::largeAlphabet
             return iter->second;
         }
 
+#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+        const FontData & data = getFontData( fontType );
+        const std::vector<uint32_t> & rows = getRows( fontType );
+        const size_t rowOffset = glyphIndex * static_cast<size_t>( data.height );
+        if ( rows.size() < rowOffset + static_cast<size_t>( data.height ) ) {
+            return getZeroAdvanceSprite();
+        }
+
+        Sprite glyph( data.width, data.height, -data.advance, 0 );
+        glyph.reset();
+
+        const uint8_t foreground = getForegroundColor( fontType );
+        const uint8_t shadow = GetColorId( 35, 35, 35 );
+
+        for ( int32_t y = 0; y + 1 < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x + 1 < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x + 1, y + 1, shadow );
+                }
+            }
+        }
+
+        for ( int32_t y = 0; y < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x, y, foreground );
+                }
+            }
+        }
+#else
         const int32_t scale = getScale( fontType );
         const int32_t advance = getAdvance( fontType );
         const int32_t width = baseGlyphWidth * scale;
@@ -193,6 +382,7 @@ namespace fheroes2::largeAlphabet
                 }
             }
         }
+#endif
 
         auto [iter, inserted] = cache.emplace( key, std::move( glyph ) );
         assert( inserted );
