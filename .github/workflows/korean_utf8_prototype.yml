@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate Korean bitmap font
         run: |
-          python -m pip install --disable-pip-version-check pillow
+          python -m pip install --disable-pip-version-check pillow polib
           mkdir -p build
           python - <<'PY'
           import urllib.request
@@ -47,21 +47,11 @@ jobs:
         run: |
           choco install gettext -y --no-progress
 
-      - name: Validate Korean PO
+      - name: Validate Korean PO and merge translated map text
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          text = Path('files/lang/ko.po').read_text(encoding='utf-8')
-          old = r'''msgid "sphinx|'\n\nYour answer?"''' + '\n' + r'''msgstr "\n\n당신의 답은?"'''
-          new = r'''msgid "sphinx|'\n\nYour answer?"''' + '\n' + r'''msgstr "'\n\n당신의 답은?"'''
-          if old not in text:
-              raise SystemExit('Expected Sphinx translation entry was not found.')
-          text = text.replace(old, new, 1)
-          if '\nmsgid "Korean"\n' not in text:
-              text += '\n\nmsgid "Korean"\nmsgstr "한국어"\n'
-          Path('build/ko-build.po').write_text(text, encoding='utf-8', newline='\n')
-          PY
+          mkdir -p build
+          curl.exe -L --fail --retry 3 "https://drive.usercontent.google.com/download?id=1bUhZ5I04VWOqtvS3b_zqZbjPT6GBUto2&export=download&confirm=t" -o build/map-text.csv
+          python script/merge_korean_map_po.py files/lang/ko.po build/map-text.csv build/ko-build.po
           "/c/Program Files/gettext-iconv/bin/msgfmt.exe" --check --check-format build/ko-build.po -o build/ko-utf8.mo
 
       - name: Register Korean locale
@@ -93,7 +83,7 @@ jobs:
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
-      - name: Patch Korean language UI test
+      - name: Patch Korean language UI and dynamic map text test
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -160,6 +150,7 @@ jobs:
 
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
+          python script/patch_korean_map_gettext_test.py
 
       - uses: microsoft/setup-msbuild@v3
 
