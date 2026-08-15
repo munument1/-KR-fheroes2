@@ -108,9 +108,28 @@ namespace Assets
 {
     const fheroes2::Sprite & getKoreanAwareImage( const int icnId, const uint32_t index )
     {
-        if ( !isKoreanMode() || index < 0x80 || !isKoreanFontIcn( icnId ) ) {
+        if ( !isKoreanMode() || !isKoreanFontIcn( icnId ) ) {
             koreanSequenceState = {};
             return getImage( icnId, index );
+        }
+
+        if ( index < 0x80 ) {
+            koreanSequenceState = {};
+            const fheroes2::Sprite & sprite = getImage( icnId, index );
+            if ( !sprite.empty() ) {
+                return sprite;
+            }
+
+            // Some user maps contain printable ASCII symbols for which the original
+            // Heroes II font resource has no sprite. Korean map translations can keep
+            // those symbols, so use a visible safe fallback instead of tripping the
+            // stock renderer's !charSprite.empty() assertion.
+            const fheroes2::Sprite & fallback = getImage( icnId, static_cast<uint32_t>( '?' ) );
+            if ( !fallback.empty() ) {
+                return fallback;
+            }
+
+            return fheroes2::koreanFont::getZeroAdvanceSprite();
         }
 
         const uint8_t value = static_cast<uint8_t>( index );
@@ -147,7 +166,17 @@ namespace Assets
         }
 
         koreanSequenceState = {};
-        return getImage( icnId, index );
+        const fheroes2::Sprite & sprite = getImage( icnId, index );
+        if ( !sprite.empty() ) {
+            return sprite;
+        }
+
+        const fheroes2::Sprite & fallback = getImage( icnId, static_cast<uint32_t>( '?' ) );
+        if ( !fallback.empty() ) {
+            return fallback;
+        }
+
+        return fheroes2::koreanFont::getZeroAdvanceSprite();
     }
 
     uint32_t getKoreanAwareImageCount( const int icnId )

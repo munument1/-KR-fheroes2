@@ -187,9 +187,14 @@ namespace fheroes2::koreanFont
 
     const Sprite & getAdvanceSprite( const FontType & fontType )
     {
-        static std::map<int32_t, Sprite> sprites;
         const int32_t advance = getAdvance( fontType );
-        auto [iter, inserted] = sprites.try_emplace( advance, advance, 1, 0, 0 );
+        const bool isButtonFont = fontType.size == FontSize::BUTTON_RELEASED || fontType.size == FontSize::BUTTON_PRESSED;
+        const int32_t cacheKey = advance * 2 + ( isButtonFont ? 1 : 0 );
+
+        static std::map<int32_t, Sprite> sprites;
+        const int32_t spriteX = isButtonFont ? -1 : 0;
+        const int32_t spriteWidth = isButtonFont ? advance + 1 : advance;
+        auto [iter, inserted] = sprites.try_emplace( cacheKey, spriteWidth, 1, spriteX, 0 );
         if ( inserted ) {
             iter->second.reset();
         }
@@ -228,6 +233,18 @@ namespace fheroes2::koreanFont
         Sprite glyph( data.width, data.height, -data.advance, 0 );
         glyph.reset();
         const uint8_t foreground = getForegroundColor( fontType );
+        const uint8_t shadow = GetColorId( 35, 35, 35 );
+
+        // Add a crisp 1-pixel drop shadow without changing glyph dimensions or advance.
+        // Drawing the shadow first lets the foreground overwrite any overlapping pixels.
+        for ( int32_t y = 0; y + 1 < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x + 1 < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x + 1, y + 1, shadow );
+                }
+            }
+        }
 
         for ( int32_t y = 0; y < data.height; ++y ) {
             const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
