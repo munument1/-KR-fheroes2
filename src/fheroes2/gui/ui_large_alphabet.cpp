@@ -172,42 +172,10 @@ namespace
         return static_cast<size_t>( std::distance( codePoints.begin(), iter ) );
     }
 #else
-    constexpr int32_t baseGlyphWidth = 11;
-    constexpr int32_t baseGlyphHeight = 13;
-
-    struct BitmapGlyph
+    int32_t getFallbackAdvance( const fheroes2::FontType & fontType )
     {
-        uint32_t codePoint;
-        std::array<uint32_t, baseGlyphHeight> rows;
-    };
-
-    // A small built-in bootstrap set keeps the branch buildable even when the
-    // generated header is absent. CI and release builds generate the complete
-    // large alphabet before compiling.
-    constexpr std::array<BitmapGlyph, 7> prototypeGlyphs = { {
-        { 0xAC08U, { 0x000U, 0x11FU, 0x100U, 0x300U, 0x110U, 0x10FU, 0x1FEU, 0x100U, 0x1FEU, 0x002U, 0x1FEU, 0x000U, 0x000U } },
-        { 0xAE00U, { 0x000U, 0x1FEU, 0x100U, 0x100U, 0x100U, 0x3FFU, 0x000U, 0x100U, 0x1FEU, 0x002U, 0x1FEU, 0x000U, 0x000U } },
-        { 0xAE30U, { 0x000U, 0x13FU, 0x120U, 0x120U, 0x120U, 0x110U, 0x110U, 0x108U, 0x104U, 0x103U, 0x100U, 0x000U, 0x000U } },
-        { 0xAF34U, { 0x000U, 0x1DEU, 0x110U, 0x110U, 0x020U, 0x3FFU, 0x000U, 0x100U, 0x1FEU, 0x002U, 0x1FEU, 0x000U, 0x000U } },
-        { 0xB9ACU, { 0x000U, 0x13FU, 0x120U, 0x120U, 0x120U, 0x13FU, 0x101U, 0x101U, 0x101U, 0x13FU, 0x100U, 0x000U, 0x000U } },
-        { 0xBB34U, { 0x000U, 0x1FEU, 0x102U, 0x102U, 0x1FEU, 0x000U, 0x3FFU, 0x020U, 0x020U, 0x020U, 0x020U, 0x000U, 0x000U } },
-        { 0xBCF8U, { 0x000U, 0x102U, 0x1FEU, 0x102U, 0x030U, 0x3FFU, 0x000U, 0x002U, 0x002U, 0x002U, 0x1FEU, 0x000U, 0x000U } },
-    } };
-
-    const BitmapGlyph * findGlyph( const uint32_t codePoint )
-    {
-        for ( const BitmapGlyph & glyph : prototypeGlyphs ) {
-            if ( glyph.codePoint == codePoint ) {
-                return &glyph;
-            }
-        }
-
-        return nullptr;
-    }
-
-    int32_t getScale( const fheroes2::FontType & fontType )
-    {
-        return fontType.size == fheroes2::FontSize::LARGE ? 2 : 1;
+        constexpr int32_t baseAdvance = 12;
+        return fontType.size == fheroes2::FontSize::LARGE ? baseAdvance * 2 : baseAdvance;
     }
 #endif
 
@@ -243,7 +211,8 @@ namespace fheroes2::largeAlphabet
 #if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
         return findGlyphIndex( codePoint ) < largeAlphabetGenerated::glyphCount;
 #else
-        return findGlyph( codePoint ) != nullptr;
+        static_cast<void>( codePoint );
+        return false;
 #endif
     }
 
@@ -252,7 +221,7 @@ namespace fheroes2::largeAlphabet
 #if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
         return getFontData( fontType ).advance;
 #else
-        return baseGlyphWidth * getScale( fontType );
+        return getFallbackAdvance( fontType );
 #endif
     }
 
@@ -287,17 +256,15 @@ namespace fheroes2::largeAlphabet
 
     const Sprite & getGlyphSprite( const uint32_t codePoint, const FontType & fontType )
     {
-#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+#if !FHEROES2_HAS_GENERATED_LARGE_ALPHABET
+        static_cast<void>( codePoint );
+        static_cast<void>( fontType );
+        return getZeroAdvanceSprite();
+#else
         const size_t glyphIndex = findGlyphIndex( codePoint );
         if ( glyphIndex >= largeAlphabetGenerated::glyphCount ) {
             return getZeroAdvanceSprite();
         }
-#else
-        const BitmapGlyph * glyphData = findGlyph( codePoint );
-        if ( glyphData == nullptr ) {
-            return getZeroAdvanceSprite();
-        }
-#endif
 
         static std::map<uint64_t, Sprite> cache;
         const uint64_t key = makeCacheKey( codePoint, fontType );
@@ -305,7 +272,6 @@ namespace fheroes2::largeAlphabet
             return iter->second;
         }
 
-#if FHEROES2_HAS_GENERATED_LARGE_ALPHABET
         const FontData & data = getFontData( fontType );
         const std::vector<uint32_t> & rows = getRows( fontType );
         const size_t rowOffset = glyphIndex * static_cast<size_t>( data.height );
@@ -336,56 +302,10 @@ namespace fheroes2::largeAlphabet
                 }
             }
         }
-#else
-        const int32_t scale = getScale( fontType );
-        const int32_t advance = getAdvance( fontType );
-        const int32_t width = baseGlyphWidth * scale;
-        const int32_t height = baseGlyphHeight * scale;
-
-        Sprite glyph( width, height, -advance, 0 );
-        glyph.reset();
-
-        const uint8_t foreground = getForegroundColor( fontType );
-        const uint8_t shadow = GetColorId( 35, 35, 35 );
-
-        for ( int32_t y = 0; y < baseGlyphHeight; ++y ) {
-            const uint32_t row = glyphData->rows[static_cast<size_t>( y )];
-            for ( int32_t x = 0; x < baseGlyphWidth; ++x ) {
-                if ( ( row & ( 1U << x ) ) == 0 ) {
-                    continue;
-                }
-
-                for ( int32_t scaleY = 0; scaleY < scale; ++scaleY ) {
-                    for ( int32_t scaleX = 0; scaleX < scale; ++scaleX ) {
-                        const int32_t pixelX = x * scale + scaleX;
-                        const int32_t pixelY = y * scale + scaleY;
-
-                        if ( pixelX + 1 < width && pixelY + 1 < height ) {
-                            SetPixel( glyph, pixelX + 1, pixelY + 1, shadow );
-                        }
-                    }
-                }
-            }
-        }
-
-        for ( int32_t y = 0; y < baseGlyphHeight; ++y ) {
-            const uint32_t row = glyphData->rows[static_cast<size_t>( y )];
-            for ( int32_t x = 0; x < baseGlyphWidth; ++x ) {
-                if ( ( row & ( 1U << x ) ) == 0 ) {
-                    continue;
-                }
-
-                for ( int32_t scaleY = 0; scaleY < scale; ++scaleY ) {
-                    for ( int32_t scaleX = 0; scaleX < scale; ++scaleX ) {
-                        SetPixel( glyph, x * scale + scaleX, y * scale + scaleY, foreground );
-                    }
-                }
-            }
-        }
-#endif
 
         auto [iter, inserted] = cache.emplace( key, std::move( glyph ) );
         assert( inserted );
         return iter->second;
+#endif
     }
 }
