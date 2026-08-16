@@ -161,7 +161,7 @@ namespace
     {
         assert( info != nullptr );
 
-        const fheroes2::Text header( info->name, fheroes2::FontType::normalYellow(), info->getSupportedLanguage() );
+        const fheroes2::Text header = fheroes2::getMapText( info->name, fheroes2::FontType::normalYellow(), info->getSupportedLanguage() );
 
         fheroes2::MultiFontText body;
 
@@ -324,7 +324,7 @@ void ScenarioListBox::_renderSelectedScenarioInfo( fheroes2::Display & display, 
     _renderMapIcon( info.width, display, dst.x + SELECTED_SCENARIO_MAP_SIZE_OFFSET_X, dst.y + SELECTED_SCENARIO_GENERAL_OFFSET_Y );
     fheroes2::Blit( _getMapTypeIcon( info.version ), display, dst.x + SELECTED_SCENARIO_MAP_TYPE_OFFSET_X, dst.y + SELECTED_SCENARIO_GENERAL_OFFSET_Y );
 
-    fheroes2::Text mapNameText{ info.name, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() };
+    fheroes2::Text mapNameText = fheroes2::getMapText( info.name, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() );
     mapNameText.fitToOneRow( SCENARIO_LIST_MAP_NAME_WIDTH );
     mapNameText.draw( GetCenteredTextXCoordinate( dst.x + SELECTED_SCENARIO_MAP_NAME_OFFSET_X, SELECTED_SCENARIO_MAP_NAME_WIDTH, mapNameText.width() ),
                       dst.y + SELECTED_SCENARIO_GENERAL_OFFSET_Y + 2, display );
@@ -341,7 +341,7 @@ void ScenarioListBox::_renderSelectedScenarioInfo( fheroes2::Display & display, 
     difficultyText.draw( GetCenteredTextXCoordinate( dst.x + SELECTED_SCENARIO_DIFFICULTY_OFFSET_X, SELECTED_SCENARIO_DIFFICULTY_WIDTH, difficultyText.width() ),
                          dst.y + SELECTED_SCENARIO_DIFFICULTY_OFFSET_Y, display );
 
-    fheroes2::Text descriptionText( info.description, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() );
+    fheroes2::Text descriptionText = fheroes2::getMapText( info.description, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() );
     descriptionText.setUniformVerticalAlignment( false );
     descriptionText.fitToArea( SELECTED_SCENARIO_DESCRIPTION_BOX_WIDTH - 8, SELECTED_SCENARIO_DESCRIPTION_HEIGHT - 3 );
     descriptionText.draw( dst.x + SELECTED_SCENARIO_DESCRIPTION_OFFSET_X + 4, dst.y + SELECTED_SCENARIO_DESCRIPTION_OFFSET_Y + 3,
@@ -350,9 +350,8 @@ void ScenarioListBox::_renderSelectedScenarioInfo( fheroes2::Display & display, 
 
 void ScenarioListBox::_renderMapName( const Maps::FileInfo & info, bool selected, const int32_t baseYOffset, fheroes2::Display & display ) const
 {
-    fheroes2::Text mapName{ info.name,
-                            { fheroes2::FontSize::NORMAL, ( selected ? fheroes2::FontColor::YELLOW : fheroes2::FontColor::WHITE ) },
-                            info.getSupportedLanguage() };
+    fheroes2::Text mapName = fheroes2::getMapText(
+        info.name, { fheroes2::FontSize::NORMAL, ( selected ? fheroes2::FontColor::YELLOW : fheroes2::FontColor::WHITE ) }, info.getSupportedLanguage() );
     mapName.fitToOneRow( SCENARIO_LIST_MAP_NAME_WIDTH );
     const int32_t xCoordinate = GetCenteredTextXCoordinate( _offsetX + SCENARIO_LIST_MAP_NAME_OFFSET_X, SCENARIO_LIST_MAP_NAME_WIDTH, mapName.width() );
     const int32_t yCoordinate = baseYOffset + MAP_LIST_ROW_SPACING_Y - 1;

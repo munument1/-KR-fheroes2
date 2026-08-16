@@ -293,6 +293,18 @@ namespace fheroes2
         const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );
         const SupportedLanguage resourceLanguage = getResourceLanguage();
 
+        // Large-alphabet UTF-8 languages render non-ASCII glyphs outside the legacy ICN code-page tables.
+        // Keep the stock ASCII-compatible font resources for punctuation and digits.
+        if ( getCodePage( language ) == CodePage::UTF8 ) {
+            if ( resourceLanguage == SupportedLanguage::French ) {
+                Assets::updateLanguageDependentResources( SupportedLanguage::French, false );
+            }
+            else {
+                Assets::updateLanguageDependentResources( SupportedLanguage::English, true );
+            }
+            return;
+        }
+
         // The original French assets replaces several ASCII special characters with language-specific characters.
         // In the engine we use CP1252 for these characters.
         if ( ( language == SupportedLanguage::English ) && ( resourceLanguage == SupportedLanguage::French ) ) {

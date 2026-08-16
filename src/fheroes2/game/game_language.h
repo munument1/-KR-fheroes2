@@ -65,5 +65,6 @@ namespace fheroes2
         CP1258,
         ISO8859_16,
         ISO8859_3,
+        UTF8,
     };
 }

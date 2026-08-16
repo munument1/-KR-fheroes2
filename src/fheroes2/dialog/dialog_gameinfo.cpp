@@ -118,7 +118,7 @@ void Dialog::GameInfo()
     const int32_t scenarioNameMaxWidth{ 349 };
     const fheroes2::Rect scenarioNameRoi{ 37 + shadowOffset.x, 29 + shadowOffset.y, scenarioNameMaxWidth - ( isCreatorInfoPresent ? buttonAboutWidth : 0 ), 19 };
 
-    fheroes2::Text text( mapInfo.name, fheroes2::FontType::normalWhite(), mapLanguage );
+    fheroes2::Text text = fheroes2::getMapText( mapInfo.name, fheroes2::FontType::normalWhite(), mapLanguage );
     // We deduct 2 to have at least 1 pixel space between text and text field borders.
     text.fitToOneRow( scenarioNameRoi.width - 2 );
     if ( isCreatorInfoPresent ) {
@@ -163,7 +163,7 @@ void Dialog::GameInfo()
 
     const fheroes2::Rect scenarioDescripionRoi{ shadowOffset.x + SCENARIO_DESCRIPTION_OFFSET, shadowOffset.y + 107, SCENARIO_DESCRIPTION_WIDTH, 37 };
 
-    text.set( mapInfo.description, fheroes2::FontType::smallWhite(), mapLanguage );
+    text = fheroes2::getMapText( mapInfo.description, fheroes2::FontType::smallWhite(), mapLanguage );
     text.fitToArea( scenarioDescripionRoi.width, scenarioDescripionRoi.height );
     text.draw( scenarioDescripionRoi.x, scenarioDescripionRoi.y, scenarioDescripionRoi.width, display );
 
@@ -226,11 +226,11 @@ void Dialog::GameInfo()
 
         if ( le.isMouseRightButtonPressedInArea( scenarioDescripionRoi ) ) {
             const fheroes2::Text header( _( "Map Description" ), fheroes2::FontType::normalYellow() );
-            const fheroes2::Text body( mapInfo.description, fheroes2::FontType::normalWhite(), mapLanguage );
+            const fheroes2::Text body = fheroes2::getMapText( mapInfo.description, fheroes2::FontType::normalWhite(), mapLanguage );
             fheroes2::showMessage( header, body, Dialog::ZERO, {} );
         }
         else if ( le.isMouseRightButtonPressedInArea( scenarioNameRoi ) ) {
-            text.set( mapInfo.name, fheroes2::FontType::normalYellow(), mapLanguage );
+            text = fheroes2::getMapText( mapInfo.name, fheroes2::FontType::normalYellow(), mapLanguage );
             fheroes2::showMessage( text, fheroes2::Text{}, Dialog::ZERO );
         }
         else if ( le.isMouseRightButtonPressedInArea( buttonOk.area() ) ) {

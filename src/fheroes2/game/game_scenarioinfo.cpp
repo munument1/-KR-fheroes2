@@ -127,7 +127,7 @@ namespace
     void RedrawMapTitle( const Settings & conf, const fheroes2::Rect & maxRoi, const fheroes2::Rect & centeredRoi )
     {
         const auto & info = conf.getCurrentMapInfo();
-        fheroes2::Text text{ info.name, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() };
+        fheroes2::Text text = fheroes2::getMapText( info.name, fheroes2::FontType::normalWhite(), info.getSupportedLanguage() );
 
         if ( text.width() > centeredRoi.width ) {
             text.fitToOneRow( maxRoi.width );

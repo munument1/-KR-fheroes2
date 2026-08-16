@@ -1,9 +1,6 @@
 /***************************************************************************
  *   fheroes2: https://github.com/ihhub/fheroes2                           *
- *   Copyright (C) 2019 - 2026                                             *
- *                                                                         *
- *   Free Heroes2 Engine: http://sourceforge.net/projects/fheroes2         *
- *   Copyright (C) 2009 by Andrey Afletdinov <fheroes2@gmail.com>          *
+ *   Copyright (C) 2026                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,34 +18,31 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#pragma once
 
-#include "castle.h" // IWYU pragma: associated
-#include "dialog.h"
-#include "game_delays.h"
-#include "game_string.h"
-#include "icn.h"
-#include "translations.h"
-#include "ui_dialog.h"
-#include "ui_text.h"
-#include "world.h"
+#include <cstdint>
 
-void Castle::_openTavern() const
+namespace fheroes2
 {
-    auto rumor = world.getCurrentRumor();
+    struct FontType;
+    class Sprite;
 
-    std::string body( _( "A generous tip for the barkeep yields the following rumor:" ) );
-    body += "\n\n";
+    namespace largeAlphabet
+    {
+        // This prototype provider intentionally uses fixed-cell glyphs. It is
+        // meant for large left-to-right alphabets such as Hangul and CJK while
+        // keeping the existing single-byte code-page path untouched.
+        bool isGlyphAvailable( uint32_t codePoint );
 
-    auto text = std::make_shared<fheroes2::MultiFontText>();
-    text->add( fheroes2::Text{ std::move( body ), fheroes2::FontType::normalWhite() } );
-    text->add( fheroes2::getMapText( std::move( rumor.text ), fheroes2::FontType::normalWhite(), rumor.language ) );
+        int32_t getAdvance( const FontType & fontType );
 
-    const fheroes2::AnimationDialogElement imageUI( ICN::TAVWIN, { 0, 1 }, 0, Game::getAnimationDelayValue( Game::DelayType::CASTLE_TAVERN_DELAY ) );
-    const fheroes2::TextDialogElement textBodyUI( text );
+        // The advance sprite is transparent and consumes one complete glyph cell.
+        const Sprite & getAdvanceSprite( const FontType & fontType );
 
-    fheroes2::showStandardTextMessage( GetStringBuilding( BUILD_TAVERN ), {}, Dialog::OK, { &imageUI, &textBodyUI } );
+        // The glyph sprite is positioned one cell to the left so a completed
+        // UTF-8 sequence can draw into the cell already consumed by its lead byte.
+        const Sprite & getGlyphSprite( uint32_t codePoint, const FontType & fontType );
+
+        const Sprite & getZeroAdvanceSprite();
+    }
 }

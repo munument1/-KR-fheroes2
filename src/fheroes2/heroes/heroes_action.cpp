@@ -344,7 +344,7 @@ namespace
         }
 
         const fheroes2::Text title{ MP2::StringObject( MP2::OBJ_SIGN ), fheroes2::FontType::normalYellow() };
-        const fheroes2::Text body{ sign->message.text, fheroes2::FontType::normalWhite(), sign->message.language };
+        const fheroes2::Text body = fheroes2::getMapText( sign->message.text, fheroes2::FontType::normalWhite(), sign->message.language );
         fheroes2::showMessage( title, body, Dialog::OK );
     }
 
@@ -2885,7 +2885,8 @@ namespace
         }
 
         const fheroes2::Text emptyText;
-        const fheroes2::Text body( mapEvent->message, fheroes2::FontType::normalWhite(), Settings::Get().getCurrentMapInfo().getSupportedLanguage() );
+        const fheroes2::Text body = fheroes2::getMapText( mapEvent->message, fheroes2::FontType::normalWhite(),
+                                                                  Settings::Get().getCurrentMapInfo().getSupportedLanguage() );
 
         int32_t dialogHeight = fheroes2::getDialogHeight( emptyText, body, Dialog::OK, elementUI );
         const int32_t displayHeight = fheroes2::Display::instance().height();
@@ -3557,7 +3558,7 @@ namespace
 
             fheroes2::MultiFontText questionText;
             questionText.add( { _( "The Sphinx asks you the following riddle:\n\n'" ), fheroes2::FontType::normalWhite() } );
-            questionText.add( { riddle->riddle, fheroes2::FontType::normalWhite(), language } );
+            questionText.add( fheroes2::getMapText( riddle->riddle, fheroes2::FontType::normalWhite(), language ) );
             questionText.add( { _( "sphinx|'\n\nYour answer?" ), fheroes2::FontType::normalWhite() } );
 
             std::string answer;
