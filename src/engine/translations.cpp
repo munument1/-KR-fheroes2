@@ -152,6 +152,7 @@ namespace
         LOCALE_HU,
         LOCALE_ID,
         LOCALE_IT,
+        LOCALE_KO,
         LOCALE_LA,
         LOCALE_LT,
         LOCALE_LV,
@@ -236,6 +237,9 @@ namespace
                                                                                   // Italian
                                                                                   { "it", LocaleType::LOCALE_IT },
                                                                                   { "italian", LocaleType::LOCALE_IT },
+                                                                                  // Korean
+                                                                                  { "ko", LocaleType::LOCALE_KO },
+                                                                                  { "korean", LocaleType::LOCALE_KO },
                                                                                   // Latin
                                                                                   { "la", LocaleType::LOCALE_LA },
                                                                                   { "latin", LocaleType::LOCALE_LA },
@@ -634,6 +638,8 @@ const char * Translation::ngettext( const char * str, const char * plural, const
 {
     if ( current ) {
         switch ( current->getLocale() ) {
+        case LocaleType::LOCALE_KO:
+            return current->ngettext( str, 0 );
         case LocaleType::LOCALE_AF:
         case LocaleType::LOCALE_BG:
         case LocaleType::LOCALE_DA:
