@@ -64,7 +64,7 @@ jobs:
       - name: Package release ZIP
         run: |
           set -euo pipefail
-          archive="fheroes2-korean-windows-x64-20260819-numeric-font-fix.zip"
+          archive="fheroes2-korean-windows-x64-20260820-numeric-spacing-fix.zip"
           (
             cd release-files
             zip -r "../$archive" .
@@ -77,21 +77,20 @@ jobs:
         run: |
           set -euo pipefail
 
-          tag="korean-20260819-numeric-font-r${GITHUB_RUN_NUMBER}"
-          title="fheroes2 한국어 빌드 - 숫자 폰트 크기 통일 (2026-08-19)"
+          tag="korean-20260820-numeric-spacing-r${GITHUB_RUN_NUMBER}"
+          title="fheroes2 한국어 빌드 - 숫자 간격 수정 (2026-08-20)"
 
           cat > release-notes.md <<'EOF'
           ## fheroes2 비공식 한국어 빌드
 
-          이번 빌드는 한국어 UI에서 숫자와 한글의 글자 크기가 서로 달라 보이던 문제를 수정한 버전입니다.
+          숫자 폰트를 한국어와 같은 Galmuri 크기로 통일한 뒤 연속된 숫자가 서로 겹치던 문제를 수정한 버전입니다.
 
           ### 주요 수정
-          - 숫자 `0-9`를 원본 Heroes II ASCII 폰트 대신 한국어와 동일한 Galmuri 글리프로 렌더링
-          - SMALL/NORMAL 숫자를 한국어와 동일한 12px 셀과 베이스라인으로 통일
-          - LARGE 숫자를 한국어와 동일한 24px 셀로 통일
-          - 숫자의 색상과 1px 그림자 처리도 한국어 글리프와 동일하게 적용
+          - 숫자 `0-9`는 계속 한국어와 동일한 Galmuri 12px/24px 글리프를 사용
+          - 단일 바이트 숫자 스프라이트에 정상 advance를 부여하여 연속 숫자 겹침 수정
+          - 한글의 기존 3바이트 advance 처리 방식은 그대로 유지
+          - 숫자와 한글의 크기, 베이스라인, 색상, 1px 그림자 처리 통일 유지
           - 기존 표준 맵 이름/맵 설명 한국어 보완 및 런타임 오버라이드 유지
-          - `Hail Unicorns!`, `Shipwrecked!`, `Vikings!`, `Ghost Planet` 등 표준 맵 제목 보완 포함
 
           ### 포함 파일
           - Windows x64 `fheroes2.exe`
