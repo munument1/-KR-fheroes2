@@ -152,9 +152,12 @@ namespace
         return static_cast<uint32_t>( glyphIndex ) | ( static_cast<uint32_t>( fontType.size ) << 16 ) | ( static_cast<uint32_t>( fontType.color ) << 24 );
     }
 
-    const fheroes2::Sprite & getRasterSprite( const uint16_t glyphIndex, const fheroes2::FontType & fontType )
+    const fheroes2::Sprite & getRasterSprite( const uint16_t glyphIndex, const fheroes2::FontType & fontType, const bool advancesCursor )
     {
-        static std::map<uint32_t, fheroes2::Sprite> cache;
+        static std::map<uint32_t, fheroes2::Sprite> zeroAdvanceCache;
+        static std::map<uint32_t, fheroes2::Sprite> advancingCache;
+        auto & cache = advancesCursor ? advancingCache : zeroAdvanceCache;
+
         const uint32_t key = makeCacheKey( glyphIndex, fontType );
         if ( const auto iter = cache.find( key ); iter != cache.end() ) {
             return iter->second;
@@ -167,7 +170,11 @@ namespace
             return fheroes2::koreanFont::getZeroAdvanceSprite();
         }
 
-        fheroes2::Sprite glyph( data.width, data.height, -data.advance, 0 );
+        // Hangul syllables receive their advance from the lead-byte placeholder,
+        // so their raster sprite must have zero effective width. ASCII digits are
+        // single-byte characters and must advance by the full Galmuri cell width.
+        const int32_t spriteX = advancesCursor ? 0 : -data.advance;
+        fheroes2::Sprite glyph( data.width, data.height, spriteX, 0 );
         glyph.reset();
         const uint8_t foreground = getForegroundColor( fontType );
         const uint8_t shadow = fheroes2::GetColorId( 35, 35, 35 );
@@ -262,7 +269,7 @@ namespace fheroes2::koreanFont
             return getZeroAdvanceSprite();
         }
 
-        return getRasterSprite( syllableIndex, fontType );
+        return getRasterSprite( syllableIndex, fontType, false );
     }
 
     const Sprite & getDigitSprite( const uint8_t digitIndex, const FontType & fontType )
@@ -271,6 +278,6 @@ namespace fheroes2::koreanFont
             return getZeroAdvanceSprite();
         }
 
-        return getRasterSprite( static_cast<uint16_t>( hangulSyllableCount + digitIndex ), fontType );
+        return getRasterSprite( static_cast<uint16_t>( hangulSyllableCount + digitIndex ), fontType, true );
     }
 }
