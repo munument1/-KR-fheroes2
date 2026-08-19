@@ -3,7 +3,7 @@ name: Publish Korean Release
 on:
   push:
     branches:
-      - korean-utf8-prototype
+      - master
 
 permissions:
   actions: read
@@ -88,9 +88,11 @@ jobs:
           ### 주요 수정
           - 일부 맵 이름 및 맵 설명의 한국어 표시 보완
           - `Good vs. Evil`, `Ghost Planet 1.1`, `Go Ask Alice...`, `Eruption` 관련 런타임 문자열 보완
+          - 표준 맵 `Hail Unicorns!`, `Shipwrecked!`, `Vikings!` 제목 번역 추가
+          - `Ghost Planet` 제목 변형도 추가 대응
           - `Map: ` 표시를 `맵: `으로 수정
           - 영웅/성의 `Grouped` / `Spread` 전투 대형 설명이 번역되지 않던 정확 문자열 불일치 수정
-          - 한국어 런타임 오버라이드 155개를 최종 `ko.mo`에 병합
+          - 한국어 런타임 오버라이드 159개를 최종 `ko.mo`에 병합
 
           ### 포함 파일
           - Windows x64 `fheroes2.exe`
