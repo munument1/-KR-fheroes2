@@ -147,61 +147,9 @@ namespace
         }
     }
 
-    uint32_t makeCacheKey( const uint16_t glyphIndex, const fheroes2::FontType & fontType )
+    uint32_t makeCacheKey( const uint16_t syllableIndex, const fheroes2::FontType & fontType )
     {
-        return static_cast<uint32_t>( glyphIndex ) | ( static_cast<uint32_t>( fontType.size ) << 16 ) | ( static_cast<uint32_t>( fontType.color ) << 24 );
-    }
-
-    const fheroes2::Sprite & getRasterSprite( const uint16_t glyphIndex, const fheroes2::FontType & fontType, const bool advancesCursor )
-    {
-        static std::map<uint32_t, fheroes2::Sprite> zeroAdvanceCache;
-        static std::map<uint32_t, fheroes2::Sprite> advancingCache;
-        auto & cache = advancesCursor ? advancingCache : zeroAdvanceCache;
-
-        const uint32_t key = makeCacheKey( glyphIndex, fontType );
-        if ( const auto iter = cache.find( key ); iter != cache.end() ) {
-            return iter->second;
-        }
-
-        const FontData & data = getFontData( fontType );
-        const std::vector<uint32_t> & rows = getRows( fontType );
-        const size_t rowOffset = static_cast<size_t>( glyphIndex ) * static_cast<size_t>( data.height );
-        if ( rows.size() < rowOffset + static_cast<size_t>( data.height ) ) {
-            return fheroes2::koreanFont::getZeroAdvanceSprite();
-        }
-
-        // Hangul syllables receive their advance from the lead-byte placeholder,
-        // so their raster sprite must have zero effective width. ASCII digits are
-        // single-byte characters and must advance by the full Galmuri cell width.
-        const int32_t spriteX = advancesCursor ? 0 : -data.advance;
-        fheroes2::Sprite glyph( data.width, data.height, spriteX, 0 );
-        glyph.reset();
-        const uint8_t foreground = getForegroundColor( fontType );
-        const uint8_t shadow = fheroes2::GetColorId( 35, 35, 35 );
-
-        // Add a crisp 1-pixel drop shadow without changing glyph dimensions or advance.
-        // Drawing the shadow first lets the foreground overwrite any overlapping pixels.
-        for ( int32_t y = 0; y + 1 < data.height; ++y ) {
-            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
-            for ( int32_t x = 0; x + 1 < data.width; ++x ) {
-                if ( ( row & ( 1U << x ) ) != 0 ) {
-                    fheroes2::SetPixel( glyph, x + 1, y + 1, shadow );
-                }
-            }
-        }
-
-        for ( int32_t y = 0; y < data.height; ++y ) {
-            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
-            for ( int32_t x = 0; x < data.width; ++x ) {
-                if ( ( row & ( 1U << x ) ) != 0 ) {
-                    fheroes2::SetPixel( glyph, x, y, foreground );
-                }
-            }
-        }
-
-        auto [iter, inserted] = cache.emplace( key, std::move( glyph ) );
-        assert( inserted );
-        return iter->second;
+        return static_cast<uint32_t>( syllableIndex ) | ( static_cast<uint32_t>( fontType.size ) << 16 ) | ( static_cast<uint32_t>( fontType.color ) << 24 );
     }
 }
 
@@ -269,15 +217,46 @@ namespace fheroes2::koreanFont
             return getZeroAdvanceSprite();
         }
 
-        return getRasterSprite( syllableIndex, fontType, false );
-    }
+        static std::map<uint32_t, Sprite> cache;
+        const uint32_t key = makeCacheKey( syllableIndex, fontType );
+        if ( const auto iter = cache.find( key ); iter != cache.end() ) {
+            return iter->second;
+        }
 
-    const Sprite & getDigitSprite( const uint8_t digitIndex, const FontType & fontType )
-    {
-        if ( digitIndex >= asciiDigitCount ) {
+        const FontData & data = getFontData( fontType );
+        const std::vector<uint32_t> & rows = getRows( fontType );
+        const size_t rowOffset = static_cast<size_t>( syllableIndex ) * static_cast<size_t>( data.height );
+        if ( rows.size() < rowOffset + static_cast<size_t>( data.height ) ) {
             return getZeroAdvanceSprite();
         }
 
-        return getRasterSprite( static_cast<uint16_t>( hangulSyllableCount + digitIndex ), fontType, true );
+        Sprite glyph( data.width, data.height, -data.advance, 0 );
+        glyph.reset();
+        const uint8_t foreground = getForegroundColor( fontType );
+        const uint8_t shadow = GetColorId( 35, 35, 35 );
+
+        // Add a crisp 1-pixel drop shadow without changing glyph dimensions or advance.
+        // Drawing the shadow first lets the foreground overwrite any overlapping pixels.
+        for ( int32_t y = 0; y + 1 < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x + 1 < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x + 1, y + 1, shadow );
+                }
+            }
+        }
+
+        for ( int32_t y = 0; y < data.height; ++y ) {
+            const uint32_t row = rows[rowOffset + static_cast<size_t>( y )];
+            for ( int32_t x = 0; x < data.width; ++x ) {
+                if ( ( row & ( 1U << x ) ) != 0 ) {
+                    SetPixel( glyph, x, y, foreground );
+                }
+            }
+        }
+
+        auto [iter, inserted] = cache.emplace( key, std::move( glyph ) );
+        assert( inserted );
+        return iter->second;
     }
 }

@@ -14,7 +14,6 @@ namespace fheroes2
     namespace koreanFont
     {
         constexpr uint16_t hangulSyllableCount = 11172;
-        constexpr uint8_t asciiDigitCount = 10;
 
         bool isLeadByte( uint8_t value );
         bool isMiddleByte( uint8_t value );
@@ -26,6 +25,5 @@ namespace fheroes2
         const Sprite & getAdvanceSprite( const FontType & fontType );
         const Sprite & getZeroAdvanceSprite();
         const Sprite & getGlyphSprite( uint16_t syllableIndex, const FontType & fontType );
-        const Sprite & getDigitSprite( uint8_t digitIndex, const FontType & fontType );
     }
 }

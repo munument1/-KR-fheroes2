@@ -12,20 +12,15 @@ from PIL import Image, ImageDraw, ImageFont
 
 HANGUL_FIRST = 0xAC00
 HANGUL_COUNT = 11172
-ASCII_DIGITS = "0123456789"
 
 
 def build_rows(font_path: Path, point_size: int, width: int, height: int) -> bytes:
     font = ImageFont.truetype(str(font_path), point_size)
     output = bytearray()
 
-    # Keep digits in the same generated bitmap atlas as Hangul. Korean UI text
-    # can then render 0-9 with the exact same Galmuri size, cell and baseline
-    # instead of falling back to the differently-sized stock Heroes II font.
-    characters = [chr(codepoint) for codepoint in range(HANGUL_FIRST, HANGUL_FIRST + HANGUL_COUNT)]
-    characters.extend(ASCII_DIGITS)
+    for codepoint in range(HANGUL_FIRST, HANGUL_FIRST + HANGUL_COUNT):
+        ch = chr(codepoint)
 
-    for ch in characters:
         # Galmuri is a pixel font. Render directly to a 1-bit target so
         # FreeType/Pillow uses monochrome rasterization rather than first
         # producing antialiased grayscale pixels and thresholding them later.
