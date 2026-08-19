@@ -13,12 +13,15 @@ complete the glyph index. ASCII remains unchanged.
 from __future__ import annotations
 
 import argparse
+import json
 import struct
 import unicodedata
 from pathlib import Path
 
 HANGUL_FIRST = 0xAC00
 HANGUL_LAST = 0xD7A3
+
+RUNTIME_OVERRIDES_PATH = Path(__file__).resolve().parents[1] / "files" / "lang" / "ko_runtime_overrides.json"
 
 PUNCTUATION_FALLBACK = {
     "\u00a0": " ",
@@ -88,6 +91,39 @@ def unpack_mo(data: bytes) -> tuple[str, list[bytes], list[bytes]]:
     return endian, originals, translations
 
 
+def merge_runtime_overrides(originals: list[bytes], translations: list[bytes]) -> tuple[list[bytes], list[bytes]]:
+    if len(originals) != len(translations):
+        raise ValueError("original/translation table size mismatch")
+
+    if not RUNTIME_OVERRIDES_PATH.exists():
+        return originals, translations
+
+    overrides = json.loads(RUNTIME_OVERRIDES_PATH.read_text(encoding="utf-8"))
+    if not isinstance(overrides, dict) or not all(isinstance(source, str) and isinstance(korean, str) for source, korean in overrides.items()):
+        raise ValueError(f"invalid Korean runtime override catalog: {RUNTIME_OVERRIDES_PATH}")
+
+    catalog = dict(zip(originals, translations))
+    added = 0
+    replaced = 0
+
+    for source, korean in overrides.items():
+        original = source.encode("utf-8")
+        translated = korean.encode("utf-8")
+        if original in catalog:
+            if catalog[original] != translated:
+                replaced += 1
+        else:
+            added += 1
+        catalog[original] = translated
+
+    # GNU gettext uses a binary search over the original-string table. Keep
+    # every runtime override in bytewise msgid order after merging it into the
+    # catalog, including newly added strings that were absent from ko.po.
+    pairs = sorted(catalog.items(), key=lambda pair: pair[0])
+    print(f"Applied {len(overrides)} Korean runtime overrides ({added} added, {replaced} replaced).")
+    return [original for original, _translation in pairs], [translation for _original, translation in pairs]
+
+
 def transform_translation(original: bytes, translated: bytes) -> bytes:
     if not original:
         header = translated.decode("utf-8", errors="strict")
@@ -154,6 +190,7 @@ def main() -> None:
 
     data = args.input_mo.read_bytes()
     _endian, originals, translations = unpack_mo(data)
+    originals, translations = merge_runtime_overrides(originals, translations)
     transformed = [transform_translation(o, t) for o, t in zip(originals, translations)]
 
     args.output_mo.parent.mkdir(parents=True, exist_ok=True)
