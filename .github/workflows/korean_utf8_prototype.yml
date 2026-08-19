@@ -3,7 +3,7 @@ name: Korean UTF-8 Build
 on:
   push:
     branches:
-      - korean-utf8-prototype
+      - master
   workflow_dispatch:
 
 permissions:
