@@ -64,7 +64,7 @@ jobs:
       - name: Package release ZIP
         run: |
           set -euo pipefail
-          archive="fheroes2-korean-windows-x64-20260819-maptext-fix.zip"
+          archive="fheroes2-korean-windows-x64-20260819-standard-map-fix.zip"
           (
             cd release-files
             zip -r "../$archive" .
@@ -77,8 +77,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          tag="korean-20260819-maptext-r${GITHUB_RUN_NUMBER}"
-          title="fheroes2 한국어 빌드 - 맵 텍스트 수정 (2026-08-19)"
+          tag="korean-20260819-standard-map-r${GITHUB_RUN_NUMBER}"
+          title="fheroes2 한국어 빌드 - 표준 맵 이름 보완 (2026-08-19)"
 
           cat > release-notes.md <<'EOF'
           ## fheroes2 비공식 한국어 빌드
