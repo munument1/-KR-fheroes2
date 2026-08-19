@@ -1,0 +1,109 @@
+name: Publish Korean Release
+
+on:
+  push:
+    branches:
+      - korean-utf8-prototype
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  release:
+    if: startsWith(github.event.head_commit.message, '[release]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Wait for Korean Windows build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          run_id=""
+          for attempt in $(seq 1 80); do
+            run_json="$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow korean_utf8_prototype.yml \
+              --commit "$GITHUB_SHA" \
+              --limit 1 \
+              --json databaseId,status,conclusion)"
+
+            run_id="$(printf '%s' "$run_json" | jq -r '.[0].databaseId // empty')"
+            status="$(printf '%s' "$run_json" | jq -r '.[0].status // empty')"
+            conclusion="$(printf '%s' "$run_json" | jq -r '.[0].conclusion // empty')"
+
+            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+              if [ "$conclusion" != "success" ]; then
+                echo "Korean build run $run_id finished with conclusion: $conclusion"
+                exit 1
+              fi
+              echo "RUN_ID=$run_id" >> "$GITHUB_ENV"
+              exit 0
+            fi
+
+            sleep 15
+          done
+
+          echo "Timed out waiting for the Korean Windows build."
+          exit 1
+
+      - name: Download Korean build artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p release-files
+          gh run download "$RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name fheroes2-korean-windows-x64 \
+            --dir release-files
+
+      - name: Package release ZIP
+        run: |
+          set -euo pipefail
+          archive="fheroes2-korean-windows-x64-20260819-maptext-fix.zip"
+          (
+            cd release-files
+            zip -r "../$archive" .
+          )
+          echo "RELEASE_ARCHIVE=$archive" >> "$GITHUB_ENV"
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          tag="korean-20260819-maptext-r${GITHUB_RUN_NUMBER}"
+          title="fheroes2 한국어 빌드 - 맵 텍스트 수정 (2026-08-19)"
+
+          cat > release-notes.md <<'EOF'
+          ## fheroes2 비공식 한국어 빌드
+
+          이번 빌드는 게임 내에서 일부 영문으로 남던 맵/UI 문자열을 보완한 수정판입니다.
+
+          ### 주요 수정
+          - 일부 맵 이름 및 맵 설명의 한국어 표시 보완
+          - `Good vs. Evil`, `Ghost Planet 1.1`, `Go Ask Alice...`, `Eruption` 관련 런타임 문자열 보완
+          - `Map: ` 표시를 `맵: `으로 수정
+          - 영웅/성의 `Grouped` / `Spread` 전투 대형 설명이 번역되지 않던 정확 문자열 불일치 수정
+          - 한국어 런타임 오버라이드 155개를 최종 `ko.mo`에 병합
+
+          ### 포함 파일
+          - Windows x64 `fheroes2.exe`
+          - 실행에 필요한 DLL
+          - 한국어 런타임 카탈로그 `files/lang/ko.mo`
+
+          원본 Heroes of Might and Magic II의 게임 데이터가 필요합니다.
+          EOF
+
+          gh release create "$tag" "$RELEASE_ARCHIVE" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$title" \
+            --notes-file release-notes.md
+
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
