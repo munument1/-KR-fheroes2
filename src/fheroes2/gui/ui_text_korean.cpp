@@ -115,6 +115,15 @@ namespace Assets
 
         if ( index < 0x80 ) {
             koreanSequenceState = {};
+
+            // Render ASCII digits through the same generated Galmuri atlas as
+            // Hangul so Korean text and numbers share the exact same size,
+            // baseline, color and shadow treatment.
+            if ( index >= static_cast<uint32_t>( '0' ) && index <= static_cast<uint32_t>( '9' ) ) {
+                const fheroes2::FontType fontType = getKoreanFontType( icnId );
+                return fheroes2::koreanFont::getDigitSprite( static_cast<uint8_t>( index - static_cast<uint32_t>( '0' ) ), fontType );
+            }
+
             const fheroes2::Sprite & sprite = getImage( icnId, index );
             if ( !sprite.empty() ) {
                 return sprite;
