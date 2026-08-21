@@ -35,7 +35,7 @@
         android:fullBackupContent="@xml/full_backup_content"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="fheroes2 한국어"
+        android:label="@string/app_label_korean"
         android:supportsRtl="false"
         tools:ignore="UnusedAttribute">
 
