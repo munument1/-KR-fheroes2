@@ -11,7 +11,7 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'org.fheroes2'
+        applicationId 'org.fheroes2.korean'
 
         minSdk 22
         targetSdk 35

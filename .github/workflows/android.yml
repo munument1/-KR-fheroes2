@@ -244,10 +244,18 @@ jobs:
     - uses: ncipollo/release-action@v1
       if: ${{ github.event_name == 'push' }}
       with:
-        artifacts: fheroes2_korean_android.zip, fheroes2_korean_android_aab.zip
-        body: ${{ github.event.head_commit.message }}
+        artifacts: fheroes2-korean.apk,fheroes2_korean_android.zip,fheroes2-korean.aab,fheroes2_korean_android_aab.zip
+        body: |
+          fheroes2 한국어 Android 자동 빌드입니다.
+
+          - `fheroes2-korean.apk`: Android 기기에 바로 설치하는 파일
+          - `fheroes2_korean_android.zip`: APK와 안내 문서를 포함한 배포 패키지
+          - `fheroes2-korean.aab`: Android App Bundle
+          - 패키지 ID: `org.fheroes2.korean` (공식 fheroes2 Android판과 동시 설치 가능)
+
+          Source commit: `${{ github.sha }}`
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: fheroes2 Korean Android build (latest commit)
+        name: fheroes2 한국어 Android (latest)
         tag: fheroes2-korean-android
         allowUpdates: true
         artifactErrorsFailBuild: true
