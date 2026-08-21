@@ -30,14 +30,160 @@ jobs:
       with:
         distribution: temurin
         java-version: 17
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
     - name: Install dependencies
       run: |
         bash script/android/install_packages.sh
         sudo apt-get -y update
         sudo apt-get -y install gettext
+        python -m pip install --disable-pip-version-check pillow polib
+    - name: Generate Korean bitmap font
+      run: |
+        mkdir -p build
+        python - <<'PY'
+        import urllib.request
+        urllib.request.urlretrieve(
+            'https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/Galmuri11.ttf',
+            'build/Galmuri11.ttf'
+        )
+        PY
+        python script/generate_korean_font.py build/Galmuri11.ttf src/fheroes2/gui/korean_font_generated.h
+    - name: Build Korean gettext catalog
+      run: |
+        mkdir -p build
+        python - <<'PY'
+        import polib
+
+        po = polib.pofile('files/lang/ko.po', encoding='utf-8')
+
+        # Keep the historical Sphinx prefix which was accidentally omitted in
+        # the first Korean CSV conversion. This stays here until the source PO
+        # is regenerated with the corrected entry.
+        sphinx = po.find("sphinx|'\n\nYour answer?")
+        if sphinx is not None and sphinx.msgstr == '\n\n당신의 답은?':
+            sphinx.msgstr = "'\n\n당신의 답은?"
+
+        korean_name = po.find('Korean')
+        if korean_name is None:
+            po.append(polib.POEntry(msgid='Korean', msgstr='한국어'))
+        elif not korean_name.msgstr:
+            korean_name.msgstr = '한국어'
+
+        # Korean translations never inherit a fuzzy flag.
+        for entry in po:
+            if 'fuzzy' in entry.flags and (entry.msgstr or entry.msgstr_plural):
+                entry.flags.remove('fuzzy')
+
+        po.save('build/ko-build.po', newline='\n')
+        po.save_as_mofile('build/ko-utf8.mo')
+        print(f'Built Korean catalog with {len(po)} entries.')
+        PY
+    - name: Register Korean locale
+      run: |
+        python - <<'PY'
+        from pathlib import Path
+
+        path = Path('src/engine/translations.cpp')
+        text = path.read_text(encoding='utf-8')
+
+        old = '''        LOCALE_IT,\n        LOCALE_LA,'''
+        new = '''        LOCALE_IT,\n        LOCALE_KO,\n        LOCALE_LA,'''
+        if old not in text:
+            raise SystemExit('Locale enum insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''                                                                                  // Latin\n                                                                                  { "la", LocaleType::LOCALE_LA },'''
+        new = '''                                                                                  // Korean\n                                                                                  { "ko", LocaleType::LOCALE_KO },\n                                                                                  { "korean", LocaleType::LOCALE_KO },\n                                                                                  // Latin\n                                                                                  { "la", LocaleType::LOCALE_LA },'''
+        if old not in text:
+            raise SystemExit('Locale map insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''        case LocaleType::LOCALE_EL:\n        case LocaleType::LOCALE_FR:'''
+        new = '''        case LocaleType::LOCALE_KO:\n            return current->ngettext( str, 0 );\n        case LocaleType::LOCALE_EL:\n        case LocaleType::LOCALE_FR:'''
+        if old not in text:
+            raise SystemExit('Plural rule insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        path.write_text(text, encoding='utf-8', newline='\n')
+        PY
+    - name: Register Korean language UI
+      run: |
+        python - <<'PY'
+        from pathlib import Path
+
+        # Remove the old hard-coded main-menu font demonstration strings from
+        # release builds. Korean text is now rendered through the normal UI.
+        path = Path('src/fheroes2/game/game_mainmenu_ui.cpp')
+        text = path.read_text(encoding='utf-8')
+        text = text.replace('#include "korean_utf8_prototype.h"\n', '', 1)
+        marker = '        // Korean font prototype: fixed UTF-8 bytes and fixed on-screen coordinates.\n'
+        start = text.find(marker)
+        end = text.find('    }\n\n    void drawEditorMainMenuScreen()', start)
+        if start < 0 or end < 0:
+            raise SystemExit('Main menu Korean prototype block was not found.')
+        text = text[:start] + text[end:]
+        path.write_text(text, encoding='utf-8', newline='\n')
+
+        path = Path('src/fheroes2/game/game_language.h')
+        text = path.read_text(encoding='utf-8')
+        old = '''        Ukrainian,\n        Vietnamese\n    };'''
+        new = '''        Ukrainian,\n        Vietnamese,\n        Korean\n    };'''
+        if old not in text:
+            raise SystemExit('SupportedLanguage insertion point not found.')
+        path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+        path = Path('src/fheroes2/gui/ui_language.cpp')
+        text = path.read_text(encoding='utf-8')
+
+        old = '''            { "el", fheroes2::SupportedLanguage::Greek },      { "greek", fheroes2::SupportedLanguage::Greek },\n            { "eo", fheroes2::SupportedLanguage::Esperanto },  { "esperanto", fheroes2::SupportedLanguage::Esperanto } };'''
+        new = '''            { "el", fheroes2::SupportedLanguage::Greek },      { "greek", fheroes2::SupportedLanguage::Greek },\n            { "ko", fheroes2::SupportedLanguage::Korean },     { "korean", fheroes2::SupportedLanguage::Korean },\n            { "eo", fheroes2::SupportedLanguage::Esperanto },  { "esperanto", fheroes2::SupportedLanguage::Esperanto } };'''
+        if old not in text:
+            raise SystemExit('Language name map insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''                                                             SupportedLanguage::Slovak,     SupportedLanguage::Vietnamese, SupportedLanguage::Greek,\n                                                             SupportedLanguage::Esperanto };'''
+        new = '''                                                             SupportedLanguage::Slovak,     SupportedLanguage::Vietnamese, SupportedLanguage::Greek,\n                                                             SupportedLanguage::Esperanto,  SupportedLanguage::Korean };'''
+        if old not in text:
+            raise SystemExit('Supported language list insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''        case SupportedLanguage::Esperanto:\n            return _( "Esperanto" );\n        default:'''
+        new = '''        case SupportedLanguage::Esperanto:\n            return _( "Esperanto" );\n        case SupportedLanguage::Korean:\n            return _( "Korean" );\n        default:'''
+        if old not in text:
+            raise SystemExit('Language display name insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''        case SupportedLanguage::Esperanto:\n            return "eo";\n        default:'''
+        new = '''        case SupportedLanguage::Esperanto:\n            return "eo";\n        case SupportedLanguage::Korean:\n            return "ko";\n        default:'''
+        if old not in text:
+            raise SystemExit('Language abbreviation insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''        const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );\n        const SupportedLanguage resourceLanguage = getResourceLanguage();\n\n        // The original French assets replaces several ASCII special characters with language-specific characters.'''
+        new = '''        const SupportedLanguage language = getLanguageFromAbbreviation( abbreviation );\n        const SupportedLanguage resourceLanguage = getResourceLanguage();\n\n        // Korean glyphs are handled by the custom renderer. ASCII punctuation\n        // and digits still come from the stock English-compatible font assets.\n        if ( language == SupportedLanguage::Korean ) {\n            if ( resourceLanguage == SupportedLanguage::French ) {\n                Assets::updateLanguageDependentResources( SupportedLanguage::French, false );\n            }\n            else {\n                Assets::updateLanguageDependentResources( SupportedLanguage::English, true );\n            }\n            return;\n        }\n\n        // The original French assets replaces several ASCII special characters with language-specific characters.'''
+        if old not in text:
+            raise SystemExit('Korean alphabet bypass insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        old = '''        case SupportedLanguage::English:\n            return CodePage::ASCII;'''
+        new = '''        case SupportedLanguage::English:\n        case SupportedLanguage::Korean:\n            return CodePage::ASCII;'''
+        if old not in text:
+            raise SystemExit('Korean code page insertion point not found.')
+        text = text.replace(old, new, 1)
+
+        path.write_text(text, encoding='utf-8', newline='\n')
+        PY
+    - name: Enable gettext for embedded map text
+      run: |
+        python script/patch_korean_map_gettext.py
     - name: Generate translations
       run: |
         make -C files/lang -j "$(nproc)"
+    - name: Build Korean runtime catalog
+      run: |
+        python script/compile_korean_mo.py build/ko-utf8.mo files/lang/ko.mo
     - name: Create keystore
       if: ${{ github.event_name == 'push' && env.KEYSTORE_BASE64 != '' }}
       run: |
@@ -48,15 +194,15 @@ jobs:
       run: |
         cd android
         ./gradlew assembleDebug bundleDebug
-        cp app/build/outputs/apk/debug/app-debug.apk ../fheroes2.apk
-        cp app/build/outputs/bundle/debug/app-debug.aab ../fheroes2.aab
+        cp app/build/outputs/apk/debug/app-debug.apk ../fheroes2-korean.apk
+        cp app/build/outputs/bundle/debug/app-debug.aab ../fheroes2-korean.aab
     - name: Build release AAB and APK
       if: ${{ github.event_name == 'push' && env.KEYSTORE_BASE64 != '' }}
       run: |
         cd android
         ./gradlew assembleRelease bundleRelease
-        cp app/build/outputs/apk/release/app-release.apk ../fheroes2.apk
-        cp app/build/outputs/bundle/release/app-release.aab ../fheroes2.aab
+        cp app/build/outputs/apk/release/app-release.apk ../fheroes2-korean.apk
+        cp app/build/outputs/bundle/release/app-release.aab ../fheroes2-korean.aab
       env:
         FHEROES2_KEYSTORE: .keystore/fheroes2.keystore
         FHEROES2_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -79,30 +225,30 @@ jobs:
         path: android/isotools/build/reports/
     - name: Create packages
       run: |
-        7z a -bb1 -tzip -- fheroes2_android.zip LICENSE changelog.txt fheroes2.apk ./docs/README.txt ./docs/README_android.md
-        7z a -bb1 -tzip -- fheroes2_android_aab.zip LICENSE changelog.txt fheroes2.aab
+        7z a -bb1 -tzip -- fheroes2_korean_android.zip LICENSE changelog.txt fheroes2-korean.apk ./docs/README.txt ./docs/README_android.md
+        7z a -bb1 -tzip -- fheroes2_korean_android_aab.zip LICENSE changelog.txt fheroes2-korean.aab
     - uses: actions/upload-artifact@v7
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        name: fheroes2_android.zip
-        path: fheroes2_android.zip
+        name: fheroes2_korean_android.zip
+        path: fheroes2_korean_android.zip
         archive: false
         if-no-files-found: error
     - uses: actions/upload-artifact@v7
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        name: fheroes2_android_aab.zip
-        path: fheroes2_android_aab.zip
+        name: fheroes2_korean_android_aab.zip
+        path: fheroes2_korean_android_aab.zip
         archive: false
         if-no-files-found: error
     - uses: ncipollo/release-action@v1
       if: ${{ github.event_name == 'push' }}
       with:
-        artifacts: fheroes2_android.zip, fheroes2_android_aab.zip
+        artifacts: fheroes2_korean_android.zip, fheroes2_korean_android_aab.zip
         body: ${{ github.event.head_commit.message }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: Android build (latest commit)
-        tag: fheroes2-android
+        name: fheroes2 Korean Android build (latest commit)
+        tag: fheroes2-korean-android
         allowUpdates: true
         artifactErrorsFailBuild: true
         prerelease: true

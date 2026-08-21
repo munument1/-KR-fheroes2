@@ -86,7 +86,7 @@ jobs:
   android:
     name: Android
     needs:
-    - msvc
+    - style
     uses: ./.github/workflows/android.yml
   cmake:
     name: CMake

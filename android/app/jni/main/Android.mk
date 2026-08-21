@@ -1,6 +1,6 @@
 ###########################################################################
 #   fheroes2: https://github.com/ihhub/fheroes2                           #
-#   Copyright (C) 2022                                                    #
+#   Copyright (C) 2022 - 2026                                             #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or modify  #
 #   it under the terms of the GNU General Public License as published by  #
@@ -26,21 +26,32 @@ include $(CLEAR_VARS)
 LOCAL_SHORT_COMMANDS := true
 
 MAIN_SRC_DIR := $(LOCAL_PATH)/../../../../src/fheroes2
+MAIN_CPP_SOURCES := \
+    $(wildcard $(MAIN_SRC_DIR)/*/*.cpp) \
+    $(wildcard $(MAIN_SRC_DIR)/*/*/*.cpp)
+
+# The Korean renderer wraps ui_text.cpp from ui_text_korean.cpp. Select one
+# renderer implementation depending on whether the generated Korean font atlas
+# is available, matching the conditional source selection used by MSVC.
+ifneq ($(wildcard $(MAIN_SRC_DIR)/gui/korean_font_generated.h),)
+MAIN_CPP_SOURCES := $(filter-out $(MAIN_SRC_DIR)/gui/ui_text.cpp,$(MAIN_CPP_SOURCES))
+else
+MAIN_CPP_SOURCES := $(filter-out $(MAIN_SRC_DIR)/gui/korean_font.cpp $(MAIN_SRC_DIR)/gui/ui_text_korean.cpp,$(MAIN_CPP_SOURCES))
+endif
 
 # SDL expects libmain.so as the main application module
 LOCAL_MODULE := main
 LOCAL_C_INCLUDES := \
     $(filter %/, $(wildcard $(MAIN_SRC_DIR)/*/)) \
     $(filter %/, $(wildcard $(MAIN_SRC_DIR)/*/*/))
-LOCAL_SRC_FILES := \
-    $(wildcard $(MAIN_SRC_DIR)/*/*.cpp) \
-    $(wildcard $(MAIN_SRC_DIR)/*/*/*.cpp)
+LOCAL_SRC_FILES := $(MAIN_CPP_SOURCES)
 LOCAL_SHARED_LIBRARIES := SDL2
 LOCAL_STATIC_LIBRARIES := engine
 LOCAL_CFLAGS := $(FHEROES2_C_WARN_OPTIONS)
 LOCAL_CPP_FEATURES := exceptions rtti
 LOCAL_CPPFLAGS := \
     -std=c++17 \
+    -Wno-overlength-strings \
     $(FHEROES2_CPP_WARN_OPTIONS)
 
 include $(BUILD_SHARED_LIBRARY)
