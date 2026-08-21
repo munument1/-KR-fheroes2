@@ -51,6 +51,7 @@ LOCAL_CFLAGS := $(FHEROES2_C_WARN_OPTIONS)
 LOCAL_CPP_FEATURES := exceptions rtti
 LOCAL_CPPFLAGS := \
     -std=c++17 \
+    -Wno-overlength-strings \
     $(FHEROES2_CPP_WARN_OPTIONS)
 
 include $(BUILD_SHARED_LIBRARY)
