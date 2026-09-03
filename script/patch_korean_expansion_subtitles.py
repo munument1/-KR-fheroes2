@@ -208,13 +208,13 @@ def add_expansion_subtitles(source: str) -> str:
     source = source[:dispatcher_pos] + "".join(functions) + source[dispatcher_pos:]
 
     dispatcher_pos = source.find(dispatcher_marker)
-    return_marker = "\n        return {};\n    }\n\n"
-    return_pos = source.find(return_marker, dispatcher_pos)
-    if return_pos < 0:
-        raise SystemExit("Korean campaign subtitle dispatcher return statement was not found.")
+    loop_end_marker = "\n        }\n\n        return {};\n    }\n\n"
+    loop_end_pos = source.find(loop_end_marker, dispatcher_pos)
+    if loop_end_pos < 0:
+        raise SystemExit("Korean campaign subtitle dispatcher loop end was not found.")
 
     cases = "\n" + "\n".join(dispatch_cases)
-    return source[:return_pos] + cases + source[return_pos:]
+    return source[:loop_end_pos] + cases + source[loop_end_pos:]
 
 
 def main() -> None:
