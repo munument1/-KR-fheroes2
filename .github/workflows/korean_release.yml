@@ -163,7 +163,7 @@ jobs:
           set -euo pipefail
 
           tag="korean-20260903-campaign-subtitles-r${GITHUB_RUN_NUMBER}"
-          title="fheroes2 한국어 빌드 - 캠페인 영상 자막 추가 (2026-09-03)"
+          title="fheroes2 한국어 빌드 - 캠페인 영상 자막 정식판 (2026-09-03)"
 
           cat > release-notes.md <<'EOF'
           ## fheroes2 비공식 한국어 빌드
@@ -179,6 +179,7 @@ jobs:
             - Wizard's Isle
             - Voyage Home
           - 한국어 large font 기반 하단 중앙 자막 표시
+          - SMK 영상의 팔레트 변화에도 자막이 흐려지지 않도록 흰색 전경 + 검정 1px 그림자를 동적 팔레트에 맞춰 표시
           - 원본 SMK 영상 파일은 수정하거나 배포하지 않고 런타임 오버레이 방식으로 표시
           - 기존 한국어 맵/UI 문자열 보완 유지
           - Heroes II 레거시 숫자 치트 코드 통합 유지
