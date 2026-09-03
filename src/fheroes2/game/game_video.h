@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -68,7 +69,7 @@ namespace Video
         // white and their one-pixel drop shadow remains visually black on every frame.
         void render( fheroes2::Image & output, const fheroes2::Rect & frameRoi, const std::vector<uint8_t> & palette ) const
         {
-            if ( palette.size() != 256 * 3 ) {
+            if ( palette.size() != static_cast<size_t>( 256 ) * 3 ) {
                 render( output, frameRoi );
                 return;
             }
@@ -78,7 +79,7 @@ namespace Video
                 uint32_t closestDistance = 3U * 255U * 255U + 1U;
 
                 for ( uint32_t colorId = 0; colorId < 256; ++colorId ) {
-                    const size_t offset = colorId * 3;
+                    const size_t offset = static_cast<size_t>( colorId ) * 3;
                     const int32_t redDelta = static_cast<int32_t>( palette[offset] ) - red;
                     const int32_t greenDelta = static_cast<int32_t>( palette[offset + 1] ) - green;
                     const int32_t blueDelta = static_cast<int32_t>( palette[offset + 2] ) - blue;
