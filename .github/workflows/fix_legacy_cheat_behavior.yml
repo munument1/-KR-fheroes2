@@ -1,8 +1,9 @@
 name: Fix Legacy Cheat Behavior
 
 on:
-  pull_request:
-    branches: [ master ]
+  push:
+    branches:
+      - feature/legacy-cheat-codes
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,6 @@ permissions:
 
 jobs:
   patch:
-    if: github.head_ref == 'feature/legacy-cheat-codes' || github.ref_name == 'feature/legacy-cheat-codes'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -23,7 +23,6 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          # 123456789 is a battle cheat, not an adventure-map persistent hero modifier.
           path = Path('src/fheroes2/gui/interface_events.cpp')
           text = path.read_text(encoding='utf-8')
           old = '''    static const std::array<std::string_view, 16> cheatCodes
@@ -42,7 +41,6 @@ jobs:
 '''
           text = text.replace(old, '', 1)
 
-          # Match the source cheat fork's behavior: allow 32167 whenever a hero is focused.
           old = '''    if ( activatedCode == "32167" ) {
         if ( hero->inCastle() == nullptr ) {
             hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
@@ -59,10 +57,8 @@ jobs:
               text = text.replace(old, new, 1)
           elif new not in text:
               raise SystemExit('Black Dragon cheat block not found.')
-
           path.write_text(text, encoding='utf-8', newline='\n')
 
-          # Remove the incorrect persistent hero luck mode.
           path = Path('src/fheroes2/heroes/heroes.h')
           text = path.read_text(encoding='utf-8')
           old = '''        // Gives this hero maximum luck. Used by the original 123456789 cheat code.
@@ -94,8 +90,6 @@ jobs:
               raise SystemExit('Hero luck modifier block not found.')
           path.write_text(text, encoding='utf-8', newline='\n')
 
-          # Original 123456789 is entered during combat. Once entered, guarantee
-          # good luck for the currently active human unit's next attack.
           path = Path('src/fheroes2/battle/battle_interface.cpp')
           text = path.read_text(encoding='utf-8')
           marker = '''    if ( le.isAnyKeyPressed() ) {
@@ -130,8 +124,6 @@ jobs:
           PY
 
       - name: Commit source fix
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
