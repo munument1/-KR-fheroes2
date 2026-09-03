@@ -77,7 +77,10 @@ jobs:
               '            ++luckCheatProgress;\n'
               '            if ( luckCheatProgress == luckCheatCode.size() ) {\n'
               '                assert( _currentUnit != nullptr );\n'
-              '                _currentUnit->SetModes( LUCK_GOOD );\n'
+              '                Unit * mutableCurrentUnit = arena.GetTroopUID( _currentUnit->GetUID() );\n'
+              '                if ( mutableCurrentUnit != nullptr ) {\n'
+              '                    mutableCurrentUnit->SetModes( LUCK_GOOD );\n'
+              '                }\n'
               '                luckCheatProgress = 0;\n'
               '                _needRedraw = true;\n'
               '                return;\n'
@@ -92,6 +95,14 @@ jobs:
               text = text.replace(marker, replacement, 1)
           elif 'static constexpr std::array<fheroes2::Key, 9> luckCheatCode' not in text:
               raise SystemExit('Battle input insertion point not found.')
+
+          old = '                _currentUnit->SetModes( LUCK_GOOD );\n'
+          new = ('                Unit * mutableCurrentUnit = arena.GetTroopUID( _currentUnit->GetUID() );\n'
+                 '                if ( mutableCurrentUnit != nullptr ) {\n'
+                 '                    mutableCurrentUnit->SetModes( LUCK_GOOD );\n'
+                 '                }\n')
+          if old in text:
+              text = text.replace(old, new, 1)
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
@@ -104,7 +115,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No source changes needed."
           else
-            git commit -m "fix: match legacy Black Dragon and battle luck cheats"
+            git commit -m "fix: apply luck cheat to mutable battle unit"
             git push origin HEAD:feature/legacy-cheat-codes
           fi
 
