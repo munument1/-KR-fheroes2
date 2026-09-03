@@ -120,3 +120,4 @@ print("Patched dynamic map text display paths to use gettext in the active UI la
 # for the same compact Korean byte renderer used by translated UI strings.
 subprocess.run([sys.executable, "script/patch_korean_video_subtitles.py"], check=True)
 subprocess.run([sys.executable, "script/patch_korean_expansion_subtitles.py"], check=True)
+subprocess.run([sys.executable, "script/patch_korean_video_subtitle_contrast.py"], check=True)
