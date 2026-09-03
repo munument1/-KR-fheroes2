@@ -979,7 +979,9 @@ fheroes2::GameMode Interface::AdventureMap::StartGame()
         // We went through all the players, but the current player from the save file is still not found,
         // something is clearly wrong here
         if ( skipTurns ) {
-            DEBUG_LOG( DBG_GAME, DBG_WARN, "the current player from the save file was not found" << ", player color: " << Color::String( conf.CurrentColor() ) )
+            DEBUG_LOG( DBG_GAME, DBG_WARN,
+                       "the current player from the save file was not found"
+                           << ", player color: " << Color::String( conf.CurrentColor() ) )
 
             res = fheroes2::GameMode::MAIN_MENU;
         }
