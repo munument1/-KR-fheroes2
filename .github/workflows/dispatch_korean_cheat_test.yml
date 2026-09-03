@@ -1,0 +1,21 @@
+name: Dispatch Korean Cheat Test Build
+
+on:
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Korean UTF-8 build on cheat branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run korean_utf8_prototype.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref feature/legacy-cheat-codes
