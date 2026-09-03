@@ -7,7 +7,7 @@ encoding. Video subtitles that live in C++ have to use the same encoding.
 
 This build-time patch converts the Succession Wars intro literals, adds
 subtitles for the first Roland/Archibald crystal-ball briefings and adapts the
-stock subtitle renderer for Korean video palettes.
+stock subtitle renderer so Korean subtitles do not depend on Smacker palettes.
 """
 
 from __future__ import annotations
@@ -65,9 +65,6 @@ def cpp_byte_literal(text: str) -> str:
 
 
 def decode_cpp_utf8_literal(body: str) -> str:
-    # The subtitle literals use ASCII plus C++ \\uXXXX escapes, so unicode_escape
-    # gives us the original Korean Unicode string without depending on the host
-    # source-file code page.
     return codecs.decode(body, "unicode_escape")
 
 
@@ -85,10 +82,25 @@ def encode_intro_literals(source: str) -> str:
 
     block = source[start:end]
 
-    # Keep the normal Korean bitmap face. The large face becomes too heavy on
-    # top of moving video, so readability is improved through contrast instead.
-    block = block.replace("const fheroes2::Point subtitlePosition{ 320, 430 };", "const fheroes2::Point subtitlePosition{ 320, 405 };", 1)
+    # Keep the normal Korean bitmap face. The large face is too heavy over video.
+    block = block.replace("const fheroes2::Point subtitlePosition{ 320, 430 };", "const fheroes2::Point subtitlePosition{ 320, 410 };", 1)
     block = block.replace("constexpr int32_t subtitleWidth = 600;", "constexpr int32_t subtitleWidth = 540;", 1)
+
+    # The original test data started the first narration at 6 seconds. The
+    # narration actually begins immediately while the palace is on screen.
+    # Pull only the opening section forward; the later event timings were
+    # already close to the animation beats in the test playback.
+    timing_replacements = {
+        "            6000, 7000, subtitlePosition, subtitleWidth );": "            300, 8500, subtitlePosition, subtitleWidth );",
+        "subtitleFont ), 13500, 2500, subtitlePosition,": "subtitleFont ), 9000, 2300, subtitlePosition,",
+        "            16500, 3500, subtitlePosition, subtitleWidth );": "            11300, 4900, subtitlePosition, subtitleWidth );",
+        "                                20500, 3500, subtitlePosition, subtitleWidth );": "                                16300, 4200, subtitlePosition, subtitleWidth );",
+        "            24500, 8000, subtitlePosition, subtitleWidth );": "            20800, 11500, subtitlePosition, subtitleWidth );",
+    }
+    for old, new in timing_replacements.items():
+        if old not in block:
+            raise SystemExit(f"Intro timing pattern was not found: {old!r}")
+        block = block.replace(old, new, 1)
 
     def replacement(match: re.Match[str]) -> str:
         return cpp_byte_literal(decode_cpp_utf8_literal(match.group(1)))
@@ -110,7 +122,7 @@ def make_briefing_function(name: str, lines: list[tuple[str, int, int]]) -> str:
             + f"{start_ms}, {duration_ms}, subtitlePosition, subtitleWidth );"
         )
 
-    return f'''    std::vector<Video::Subtitle> {name}()\n    {{\n        const fheroes2::FontType subtitleFont = fheroes2::FontType::normalWhite();\n        const fheroes2::Point subtitlePosition{{ 320, 395 }};\n        constexpr int32_t subtitleWidth = 540;\n\n        std::vector<Video::Subtitle> subtitles;\n        subtitles.reserve( {len(lines)} );\n{chr(10).join(entries)}\n\n        return subtitles;\n    }}\n\n'''
+    return f'''    std::vector<Video::Subtitle> {name}()\n    {{\n        const fheroes2::FontType subtitleFont = fheroes2::FontType::normalWhite();\n        const fheroes2::Point subtitlePosition{{ 320, 400 }};\n        constexpr int32_t subtitleWidth = 540;\n\n        std::vector<Video::Subtitle> subtitles;\n        subtitles.reserve( {len(lines)} );\n{chr(10).join(entries)}\n\n        return subtitles;\n    }}\n\n'''
 
 
 def add_first_briefing_subtitles(source: str) -> str:
@@ -144,7 +156,6 @@ def add_first_briefing_subtitles(source: str) -> str:
 
 
 def hook_briefing_subtitles(source: str) -> str:
-    # INTRO.SMK subtitles should only be active when the Korean language is selected.
     old = '        if ( infos.size() == 1 && infos.front().fileName == "INTRO.SMK" ) {'
     new = '        if ( Settings::Get().getGameLanguage() == "ko" && infos.size() == 1 && infos.front().fileName == "INTRO.SMK" ) {'
     if old in source:
@@ -172,7 +183,7 @@ def patch_korean_subtitle_rendering(source: str) -> str:
 
     old = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n\n        // We add extra 1 to have space for contour.\n        _subtitleImage.resize( textWidth + 1, subtitleText.height( textWidth ) + 1 );\n\n        // Draw text and remove all shadow data if it could not be properly applied to video palette.\n        // We use the black color with id = 36 so no shadow will be applied to it.\n        const uint8_t blackColor = 36;\n        _subtitleImage.fill( blackColor );\n\n        // At the left and bottom there is space for contour left by original font shadows, we leave 1 extra pixel from the right and top.\n        subtitleText.draw( 0, 1, textWidth, _subtitleImage );\n        fheroes2::ReplaceColorIdByTransformId( _subtitleImage, blackColor, 1 );\n        // Add black contour to the text.\n        fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, blackColor ), _subtitleImage );\n'''
 
-    new = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n        const bool isKoreanSubtitle = Settings::Get().getGameLanguage() == "ko";\n        const int32_t horizontalPadding = isKoreanSubtitle ? 4 : 0;\n        const int32_t verticalPadding = isKoreanSubtitle ? 2 : 0;\n\n        // Korean glyphs already have a crisp one-pixel drop shadow. Avoid adding\n        // the stock contour on top of it because the double outline makes Hangul\n        // strokes look artificially bold. Add a small background margin instead.\n        _subtitleImage.resize( textWidth + 1 + horizontalPadding * 2,\n                               subtitleText.height( textWidth ) + 1 + verticalPadding * 2 );\n\n        // We use a marker color and convert it to transform pixels after text is drawn.\n        const uint8_t blackColor = 36;\n        _subtitleImage.fill( blackColor );\n        subtitleText.draw( horizontalPadding, 1 + verticalPadding, textWidth, _subtitleImage );\n\n        if ( isKoreanSubtitle ) {\n            // Korean font shadows are stored as regular palette pixels. A Smacker\n            // video can replace the palette every frame, which made the shadow\n            // change color. Convert the shadow to a strong darkening transform,\n            // and use a light darkening transform for the subtitle background.\n            const uint8_t koreanShadowColor = fheroes2::GetColorId( 35, 35, 35 );\n            fheroes2::ReplaceColorIdByTransformId( _subtitleImage, koreanShadowColor, 2 );\n            fheroes2::ReplaceColorIdByTransformId( _subtitleImage, blackColor, 5 );\n        }\n        else {\n            fheroes2::ReplaceColorIdByTransformId( _subtitleImage, blackColor, 1 );\n            // Add black contour to the text.\n            fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, blackColor ), _subtitleImage );\n        }\n'''
+    new = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n        const bool isKoreanSubtitle = Settings::Get().getGameLanguage() == "ko";\n\n        // We add extra 1 for the original font shadow placement.\n        _subtitleImage.resize( textWidth + 1, subtitleText.height( textWidth ) + 1 );\n\n        const uint8_t markerColor = 36;\n        _subtitleImage.fill( markerColor );\n        subtitleText.draw( 0, 1, textWidth, _subtitleImage );\n\n        if ( isKoreanSubtitle ) {\n            // Smacker videos can replace the whole 256-color palette on every\n            // frame. Therefore no subtitle pixel may depend on a palette index.\n            // Convert every regular text pixel to a lightening transform, the\n            // Korean one-pixel drop shadow to a darkening transform, and the\n            // untouched marker area to transparency. This also covers ASCII\n            // digits and punctuation mixed into Korean subtitles.\n            const uint8_t koreanShadowColor = fheroes2::GetColorId( 35, 35, 35 );\n            uint8_t * imageData = _subtitleImage.image();\n            uint8_t * transformData = _subtitleImage.transform();\n            const int32_t pixelCount = _subtitleImage.width() * _subtitleImage.height();\n\n            for ( int32_t i = 0; i < pixelCount; ++i ) {\n                if ( transformData[i] != 0 ) {\n                    continue;\n                }\n\n                if ( imageData[i] == markerColor ) {\n                    transformData[i] = 1;\n                }\n                else if ( imageData[i] == koreanShadowColor ) {\n                    transformData[i] = 2;\n                }\n                else {\n                    transformData[i] = 6;\n                }\n            }\n        }\n        else {\n            fheroes2::ReplaceColorIdByTransformId( _subtitleImage, markerColor, 1 );\n            // Add black contour to the text.\n            fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, markerColor ), _subtitleImage );\n        }\n'''
 
     if old not in source:
         raise SystemExit("Subtitle constructor rendering block was not found.")
@@ -187,7 +198,7 @@ def main() -> None:
     source = hook_briefing_subtitles(source)
     source = patch_korean_subtitle_rendering(source)
     path.write_text(source, encoding="utf-8", newline="\n")
-    print("Prepared Korean subtitles with stable transform-based contrast and normal-weight Hangul.")
+    print("Prepared palette-independent Korean subtitles with corrected intro opening timings.")
 
 
 if __name__ == "__main__":
