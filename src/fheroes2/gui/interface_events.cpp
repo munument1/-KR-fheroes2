@@ -140,6 +140,61 @@ void Interface::AdventureMap::EventSwitchFocusedHero( const int32_t tileIndex )
     RedrawFocus();
 }
 
+void Interface::AdventureMap::EventCheatCodeCheck(fheroes2::Key key)
+{
+    static fheroes2::Key nextExpectedKey = fheroes2::Key::NONE;
+    static int32_t mode = 0;
+
+    if((mode == 8675309 && key == nextExpectedKey) || key == fheroes2::Key::KEY_8) {
+        mode = 8675309;
+        switch(key) {
+        case fheroes2::Key::KEY_8: nextExpectedKey = fheroes2::Key::KEY_6; break;
+        case fheroes2::Key::KEY_6: nextExpectedKey = fheroes2::Key::KEY_7; break;
+        case fheroes2::Key::KEY_7: nextExpectedKey = fheroes2::Key::KEY_5; break;
+        case fheroes2::Key::KEY_5: nextExpectedKey = fheroes2::Key::KEY_3; break;
+        case fheroes2::Key::KEY_3: nextExpectedKey = fheroes2::Key::KEY_0; break;
+        case fheroes2::Key::KEY_0: nextExpectedKey = fheroes2::Key::KEY_9; break;
+        case fheroes2::Key::KEY_9:
+            {
+                world.ActionFor8675309CheatCode(Settings::Get().CurrentColor());
+                // Fully update fog directions and redraw radar and game area.
+                Interface::GameArea::updateMapFogDirections();
+                Interface::AdventureMap & I = Interface::AdventureMap::Get();
+                I.setRedraw( Interface::REDRAW_GAMEAREA | Interface::REDRAW_RADAR );
+            }
+            [[fallthrough]];
+        default:
+            mode = 0;
+            nextExpectedKey = fheroes2::Key::NONE;
+            break;
+        }
+    } else if((mode == 32167 && key == nextExpectedKey) || key == fheroes2::Key::KEY_3) {
+        mode = 32167;
+        switch(key) {
+        case fheroes2::Key::KEY_3: nextExpectedKey = fheroes2::Key::KEY_2; break;
+        case fheroes2::Key::KEY_2: nextExpectedKey = fheroes2::Key::KEY_1; break;
+        case fheroes2::Key::KEY_1: nextExpectedKey = fheroes2::Key::KEY_6; break;
+        case fheroes2::Key::KEY_6: nextExpectedKey = fheroes2::Key::KEY_7; break;
+        case fheroes2::Key::KEY_7:
+            {
+                Heroes * hero = GetFocusHeroes();
+                if ( hero != nullptr ) {
+                    hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
+                    RedrawFocus();
+                }
+            }
+            [[fallthrough]];
+        default:
+            mode = 0;
+            nextExpectedKey = fheroes2::Key::NONE;
+            break;
+        }
+    } else {
+        mode = 0;
+        nextExpectedKey = fheroes2::Key::NONE;
+    }
+}
+
 void Interface::AdventureMap::EventNextHero()
 {
     const Kingdom & myKingdom = world.GetKingdom( Settings::Get().CurrentColor() );
