@@ -3181,6 +3181,26 @@ void Battle::Interface::HumanBattleTurn( const Unit & unit, Actions & actions, s
     _buttonSkip.drawOnState( le.isMouseLeftButtonPressedAndHeldInArea( _buttonSkip.area() ) );
 
     if ( le.isAnyKeyPressed() ) {
+        static constexpr std::array<fheroes2::Key, 9> luckCheatCode{ fheroes2::Key::KEY_1, fheroes2::Key::KEY_2, fheroes2::Key::KEY_3,
+                                                                    fheroes2::Key::KEY_4, fheroes2::Key::KEY_5, fheroes2::Key::KEY_6,
+                                                                    fheroes2::Key::KEY_7, fheroes2::Key::KEY_8, fheroes2::Key::KEY_9 };
+        static size_t luckCheatProgress = 0;
+
+        const fheroes2::Key pressedKey = le.getPressedKeyValue();
+        if ( pressedKey == luckCheatCode[luckCheatProgress] ) {
+            ++luckCheatProgress;
+            if ( luckCheatProgress == luckCheatCode.size() ) {
+                assert( _currentUnit != nullptr );
+                _currentUnit->SetModes( LUCK_GOOD );
+                luckCheatProgress = 0;
+                _needRedraw = true;
+                return;
+            }
+        }
+        else {
+            luckCheatProgress = ( pressedKey == fheroes2::Key::KEY_1 ) ? 1 : 0;
+        }
+
         // Skip the turn
         if ( Game::HotKeyPressEvent( Game::HotKeyEvent::BATTLE_SKIP ) ) {
             actions.emplace_back( Command::SKIP, unit.GetUID() );

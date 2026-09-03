@@ -194,8 +194,7 @@ public:
         SPELLCASTED = 0x00000004,
         ENABLEMOVE = 0x00000008,
 
-        // Gives this hero maximum luck. Used by the original 123456789 cheat code.
-        CHEAT_MAX_LUCK = 0x00000010,
+        // UNUSED = 0x00000010,
         // UNUSED = 0x00000020,
 
         // Hero is available for recruitment in any kingdom

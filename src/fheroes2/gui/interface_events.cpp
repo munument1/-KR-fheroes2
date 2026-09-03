@@ -148,8 +148,8 @@ void Interface::AdventureMap::EventSwitchFocusedHero( const int32_t tileIndex )
 
 fheroes2::GameMode Interface::AdventureMap::EventCheatCodeCheck( const fheroes2::Key key )
 {
-    static const std::array<std::string_view, 16> cheatCodes
-        = { "911", "1313", "1911", "8675309", "123456789", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };
+    static const std::array<std::string_view, 15> cheatCodes
+        = { "911", "1313", "1911", "8675309", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };
 
     const auto keyToDigit = []( const fheroes2::Key keyValue ) -> char {
         switch ( keyValue ) {
@@ -278,17 +278,9 @@ fheroes2::GameMode Interface::AdventureMap::EventCheatCodeCheck( const fheroes2:
         return fheroes2::GameMode::CANCEL;
     }
 
-    if ( activatedCode == "123456789" ) {
-        hero->SetModes( Heroes::CHEAT_MAX_LUCK );
-        RedrawFocus();
-        return fheroes2::GameMode::CANCEL;
-    }
-
     if ( activatedCode == "32167" ) {
-        if ( hero->inCastle() == nullptr ) {
-            hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
-            RedrawFocus();
-        }
+        hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
+        RedrawFocus();
         return fheroes2::GameMode::CANCEL;
     }
 
