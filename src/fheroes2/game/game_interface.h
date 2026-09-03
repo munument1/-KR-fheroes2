@@ -122,7 +122,7 @@ namespace Interface
         static fheroes2::GameMode EventScenarioInformation();
         void EventSystemDialog() const;
         void EventSwitchFocusedHero( const int32_t tileIndex );
-        void EventCheatCodeCheck( fheroes2::Key key );
+        fheroes2::GameMode EventCheatCodeCheck( fheroes2::Key key );
         void EventNextHero();
         void EventNextTown();
         fheroes2::GameMode EventHeroMovement();

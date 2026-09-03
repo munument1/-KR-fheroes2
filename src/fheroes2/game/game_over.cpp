@@ -476,11 +476,40 @@ void GameOver::Result::Reset()
 {
     _colors = Game::GetKingdomColors();
     result = GameOver::COND_NONE;
+    _cheatResult = GameOver::COND_NONE;
 }
 
 fheroes2::GameMode GameOver::Result::checkGameOver()
 {
     const Settings & conf = Settings::Get();
+
+    if ( _cheatResult != GameOver::COND_NONE ) {
+        result = _cheatResult;
+        _cheatResult = GameOver::COND_NONE;
+
+        if ( result & GameOver::LOSS ) {
+            DialogLoss( result );
+
+            AudioManager::ResetAudio();
+            Video::ShowVideo( { { "LOSE.SMK", Video::VideoControl::PLAY_CUTSCENE_LOOP } } );
+
+            return fheroes2::GameMode::MAIN_MENU;
+        }
+
+        if ( result & GameOver::WINS ) {
+            DialogWins( result );
+
+            if ( conf.isCampaignGameType() ) {
+                return fheroes2::GameMode::COMPLETE_CAMPAIGN_SCENARIO;
+            }
+
+            AudioManager::ResetAudio();
+            Video::ShowVideo( { { "WIN.SMK", Video::VideoControl::PLAY_CUTSCENE_WAIT } }, { standardGameResults() }, true );
+            AudioManager::PlayMusicAsync( MUS::VICTORY, Music::PlaybackMode::REWIND_AND_PLAY_INFINITE );
+
+            return fheroes2::GameMode::HIGHSCORES_STANDARD;
+        }
+    }
     const bool isAutoPlaytest{ conf.IsGameType( Game::TYPE_AUTO_PLAYTEST ) };
     const PlayerColorsSet humanColors = isAutoPlaytest ? conf.GetPlayers().GetColors() : Players::HumanColors();
     const bool isSinglePlayer = ( Color::Count( humanColors ) == 1 );
