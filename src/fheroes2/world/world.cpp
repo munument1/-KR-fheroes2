@@ -903,6 +903,15 @@ uint32_t World::CountObeliskOnMaps()
     return res > 0 ? static_cast<uint32_t>( res ) : 6;
 }
 
+void World::ActionFor8675309CheatCode( const PlayerColor color )
+{
+    const PlayerColorsSet alliedColors = Players::GetPlayerFriends( color );
+
+    for ( Maps::Tile & tile : vec_tiles ) {
+        tile.ClearFog( alliedColors );
+    }
+}
+
 void World::ActionForMagellanMaps( const PlayerColor color )
 {
     const Kingdom & kingdom = world.GetKingdom( color );
