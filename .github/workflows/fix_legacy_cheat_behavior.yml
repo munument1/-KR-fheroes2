@@ -25,34 +25,18 @@ jobs:
 
           path = Path('src/fheroes2/gui/interface_events.cpp')
           text = path.read_text(encoding='utf-8')
-          old = '''    static const std::array<std::string_view, 16> cheatCodes
-        = { "911", "1313", "1911", "8675309", "123456789", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };'''
-          new = '''    static const std::array<std::string_view, 15> cheatCodes
-        = { "911", "1313", "1911", "8675309", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };'''
+          old = '    static const std::array<std::string_view, 16> cheatCodes\n        = { "911", "1313", "1911", "8675309", "123456789", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };'
+          new = '    static const std::array<std::string_view, 15> cheatCodes\n        = { "911", "1313", "1911", "8675309", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };'
           if old in text:
               text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit('Adventure cheat code list not found.')
 
-          old = '''    if ( activatedCode == "123456789" ) {
-        hero->SetModes( Heroes::CHEAT_MAX_LUCK );
-        RedrawFocus();
-        return fheroes2::GameMode::CANCEL;
-    }
-
-'''
+          old = '    if ( activatedCode == "123456789" ) {\n        hero->SetModes( Heroes::CHEAT_MAX_LUCK );\n        RedrawFocus();\n        return fheroes2::GameMode::CANCEL;\n    }\n\n'
           text = text.replace(old, '', 1)
 
-          old = '''    if ( activatedCode == "32167" ) {
-        if ( hero->inCastle() == nullptr ) {
-            hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
-            RedrawFocus();
-        }
-        return fheroes2::GameMode::CANCEL;
-    }'''
-          new = '''    if ( activatedCode == "32167" ) {
-        hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
-        RedrawFocus();
-        return fheroes2::GameMode::CANCEL;
-    }'''
+          old = '    if ( activatedCode == "32167" ) {\n        if ( hero->inCastle() == nullptr ) {\n            hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );\n            RedrawFocus();\n        }\n        return fheroes2::GameMode::CANCEL;\n    }'
+          new = '    if ( activatedCode == "32167" ) {\n        hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );\n        RedrawFocus();\n        return fheroes2::GameMode::CANCEL;\n    }'
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
@@ -61,11 +45,8 @@ jobs:
 
           path = Path('src/fheroes2/heroes/heroes.h')
           text = path.read_text(encoding='utf-8')
-          old = '''        // Gives this hero maximum luck. Used by the original 123456789 cheat code.
-        CHEAT_MAX_LUCK = 0x00000010,
-        // UNUSED = 0x00000020,'''
-          new = '''        // UNUSED = 0x00000010,
-        // UNUSED = 0x00000020,'''
+          old = '        // Gives this hero maximum luck. Used by the original 123456789 cheat code.\n        CHEAT_MAX_LUCK = 0x00000010,\n        // UNUSED = 0x00000020,'
+          new = '        // UNUSED = 0x00000010,\n        // UNUSED = 0x00000020,'
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
@@ -74,16 +55,8 @@ jobs:
 
           path = Path('src/fheroes2/heroes/heroes.cpp')
           text = path.read_text(encoding='utf-8')
-          old = '''int Heroes::getLuckWithModifiers( std::string * text ) const
-{
-    if ( Modes( CHEAT_MAX_LUCK ) ) {
-        return Luck::IRISH;
-    }
-
-    int result = Luck::NORMAL;'''
-          new = '''int Heroes::getLuckWithModifiers( std::string * text ) const
-{
-    int result = Luck::NORMAL;'''
+          old = 'int Heroes::getLuckWithModifiers( std::string * text ) const\n{\n    if ( Modes( CHEAT_MAX_LUCK ) ) {\n        return Luck::IRISH;\n    }\n\n    int result = Luck::NORMAL;'
+          new = 'int Heroes::getLuckWithModifiers( std::string * text ) const\n{\n    int result = Luck::NORMAL;'
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
@@ -92,30 +65,29 @@ jobs:
 
           path = Path('src/fheroes2/battle/battle_interface.cpp')
           text = path.read_text(encoding='utf-8')
-          marker = '''    if ( le.isAnyKeyPressed() ) {
-        // Skip the turn'''
-          replacement = '''    if ( le.isAnyKeyPressed() ) {
-        static constexpr std::array<fheroes2::Key, 9> luckCheatCode{ fheroes2::Key::KEY_1, fheroes2::Key::KEY_2, fheroes2::Key::KEY_3,
-                                                                    fheroes2::Key::KEY_4, fheroes2::Key::KEY_5, fheroes2::Key::KEY_6,
-                                                                    fheroes2::Key::KEY_7, fheroes2::Key::KEY_8, fheroes2::Key::KEY_9 };
-        static size_t luckCheatProgress = 0;
-
-        const fheroes2::Key pressedKey = le.getPressedKeyValue();
-        if ( pressedKey == luckCheatCode[luckCheatProgress] ) {
-            ++luckCheatProgress;
-            if ( luckCheatProgress == luckCheatCode.size() ) {
-                assert( _currentUnit != nullptr );
-                _currentUnit->SetModes( LUCK_GOOD );
-                luckCheatProgress = 0;
-                _needRedraw = true;
-                return;
-            }
-        }
-        else {
-            luckCheatProgress = ( pressedKey == fheroes2::Key::KEY_1 ) ? 1 : 0;
-        }
-
-        // Skip the turn'''
+          marker = '    if ( le.isAnyKeyPressed() ) {\n        // Skip the turn'
+          replacement = (
+              '    if ( le.isAnyKeyPressed() ) {\n'
+              '        static constexpr std::array<fheroes2::Key, 9> luckCheatCode{ fheroes2::Key::KEY_1, fheroes2::Key::KEY_2, fheroes2::Key::KEY_3,\n'
+              '                                                                    fheroes2::Key::KEY_4, fheroes2::Key::KEY_5, fheroes2::Key::KEY_6,\n'
+              '                                                                    fheroes2::Key::KEY_7, fheroes2::Key::KEY_8, fheroes2::Key::KEY_9 };\n'
+              '        static size_t luckCheatProgress = 0;\n\n'
+              '        const fheroes2::Key pressedKey = le.getPressedKeyValue();\n'
+              '        if ( pressedKey == luckCheatCode[luckCheatProgress] ) {\n'
+              '            ++luckCheatProgress;\n'
+              '            if ( luckCheatProgress == luckCheatCode.size() ) {\n'
+              '                assert( _currentUnit != nullptr );\n'
+              '                _currentUnit->SetModes( LUCK_GOOD );\n'
+              '                luckCheatProgress = 0;\n'
+              '                _needRedraw = true;\n'
+              '                return;\n'
+              '            }\n'
+              '        }\n'
+              '        else {\n'
+              '            luckCheatProgress = ( pressedKey == fheroes2::Key::KEY_1 ) ? 1 : 0;\n'
+              '        }\n\n'
+              '        // Skip the turn'
+          )
           if marker in text:
               text = text.replace(marker, replacement, 1)
           elif 'static constexpr std::array<fheroes2::Key, 9> luckCheatCode' not in text:
