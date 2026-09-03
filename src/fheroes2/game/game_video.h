@@ -1,6 +1,6 @@
 /***************************************************************************
  *   fheroes2: https://github.com/ihhub/fheroes2                           *
- *   Copyright (C) 2020 - 2025                                             *
+ *   Copyright (C) 2020 - 2026                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -73,6 +73,10 @@ namespace Video
     // Returns true if the file exists.
     bool getVideoFilePath( const std::string & fileName, std::string & path );
 
+    // Korean builds use this overload to attach subtitles to selected videos.
+    // Other one-argument calls are forwarded unchanged to the regular player.
+    bool ShowVideo( const std::vector<VideoInfo> & infos );
+
     // Returns false if some videos are not present, or they are corrupted.
-    bool ShowVideo( const std::vector<VideoInfo> & infos, const std::vector<Subtitle> & subtitles = {}, const bool fadeColorsOnEnd = false );
+    bool ShowVideo( const std::vector<VideoInfo> & infos, const std::vector<Subtitle> & subtitles, const bool fadeColorsOnEnd = false );
 }
