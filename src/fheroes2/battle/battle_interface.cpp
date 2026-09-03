@@ -3191,7 +3191,10 @@ void Battle::Interface::HumanBattleTurn( const Unit & unit, Actions & actions, s
             ++luckCheatProgress;
             if ( luckCheatProgress == luckCheatCode.size() ) {
                 assert( _currentUnit != nullptr );
-                _currentUnit->SetModes( LUCK_GOOD );
+                Unit * mutableCurrentUnit = arena.GetTroopUID( _currentUnit->GetUID() );
+                if ( mutableCurrentUnit != nullptr ) {
+                    mutableCurrentUnit->SetModes( LUCK_GOOD );
+                }
                 luckCheatProgress = 0;
                 _needRedraw = true;
                 return;
