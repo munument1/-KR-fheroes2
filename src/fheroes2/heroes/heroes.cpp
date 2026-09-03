@@ -1073,6 +1073,10 @@ int Heroes::GetLuck() const
 
 int Heroes::getLuckWithModifiers( std::string * text ) const
 {
+    if ( Modes( CHEAT_MAX_LUCK ) ) {
+        return Luck::IRISH;
+    }
+
     int result = Luck::NORMAL;
 
     // bonus luck
