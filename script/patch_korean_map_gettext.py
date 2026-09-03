@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -93,3 +95,7 @@ replace_once(
 )
 
 print("Patched dynamic map text display paths to use gettext in the active UI language.")
+
+# Video subtitles live in C++ rather than in the MO catalog, so prepare them
+# for the same compact Korean byte renderer used by translated UI strings.
+subprocess.run([sys.executable, "script/patch_korean_video_subtitles.py"], check=True)
