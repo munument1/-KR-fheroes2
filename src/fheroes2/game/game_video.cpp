@@ -82,39 +82,55 @@ namespace
         // They are intentionally kept here as data so they can be tuned after
         // an in-game playback check without touching the video decoder.
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uBAA8\uB4E0 \uC77C\uC740 3\uB144 \uC804, \uB299\uC740 \uAD6D\uC655 \uC544\uC774\uC5B8\uD53C\uC2A4\uD2B8\uAC00 \uC138\uC0C1\uC744 \uB5A0\uB098\uBA74\uC11C \uC2DC\uC791\uB418\uC5C8\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uBAA8\uB4E0 \uC77C\uC740 3\uB144 \uC804, \uB299\uC740 \uAD6D\uC655 \uC544\uC774\uC5B8\uD53C\uC2A4\uD2B8\uAC00 \uC138\uC0C1\uC744 \uB5A0\uB098\uBA74\uC11C \uC2DC\uC791\uB418\uC5C8\uB2E4.",
+                subtitleFont ),
             6000, 7000, subtitlePosition, subtitleWidth );
         subtitles.emplace_back( fheroes2::Text( u8"\uC655\uC5D0\uAC8C\uB294 \uB450 \uC544\uB4E4\uC774 \uC788\uC5C8\uB2E4.", subtitleFont ), 13500, 2500, subtitlePosition,
                                 subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uB864\uB79C\uB4DC\uB294 \uC120\uB7C9\uD558\uACE0 \uCE5C\uC808\uD558\uBA70 \uBA85\uC608\uB85C\uC6B4 \uC778\uBB3C\uC774\uC5C8\uB2E4.", subtitleFont ), 16500, 3500,
-            subtitlePosition, subtitleWidth );
-        subtitles.emplace_back( fheroes2::Text( u8"\uBC18\uBA74 \uC544\uCE58\uBC1C\uB4DC\uB294... \uADF8\uB9AC \uC120\uB7C9\uD558\uC9C0 \uC54A\uC558\uB2E4.", subtitleFont ), 20500, 3500,
-                                subtitlePosition, subtitleWidth );
+            fheroes2::Text( u8"\uB864\uB79C\uB4DC\uB294 \uC120\uB7C9\uD558\uACE0 \uCE5C\uC808\uD558\uBA70 \uBA85\uC608\uB85C\uC6B4 \uC778\uBB3C\uC774\uC5C8\uB2E4.",
+                            subtitleFont ),
+            16500, 3500, subtitlePosition, subtitleWidth );
+        subtitles.emplace_back( fheroes2::Text( u8"\uBC18\uBA74 \uC544\uCE58\uBC1C\uB4DC\uB294... \uADF8\uB9AC \uC120\uB7C9\uD558\uC9C0 \uC54A\uC558\uB2E4.",
+                                                subtitleFont ),
+                                20500, 3500, subtitlePosition, subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uC804\uD1B5\uC5D0 \uB530\uB77C \uC655\uC704 \uACC4\uC2B9\uC790\uB294 \uC655\uC2E4 \uC608\uC5B8\uC790\uAC00 \uC815\uD588\uC9C0\uB9CC, \uADF8\uB294 \uBD88\uC758\uC758 \uBCF4\uD2B8 \uC0AC\uACE0\uB85C \uBAA9\uC228\uC744 \uC783\uC5C8\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uC804\uD1B5\uC5D0 \uB530\uB77C \uC655\uC704 \uACC4\uC2B9\uC790\uB294 \uC655\uC2E4 \uC608\uC5B8\uC790\uAC00 \uC815\uD588\uC9C0\uB9CC, \uADF8\uB294 \uBD88\uC758\uC758 \uBCF4\uD2B8 \uC0AC\uACE0\uB85C \uBAA9\uC228\uC744 \uC783\uC5C8\uB2E4.",
+                subtitleFont ),
             24500, 8000, subtitlePosition, subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uB4A4\uB97C \uC774\uC740 \uC608\uC5B8\uC790\uB4E4\uC758 \uC6B4\uB3C4 \uB098\uC558\uB2E4\uACE4 \uD560 \uC218 \uC5C6\uC5C8\uB2E4. \uD504\uB808\uB354\uB9AD\uC740 \uCC3D\uBB38\uC5D0\uC11C \uB5A8\uC5B4\uC84C\uACE0,", subtitleFont ),
+            fheroes2::Text(
+                u8"\uB4A4\uB97C \uC774\uC740 \uC608\uC5B8\uC790\uB4E4\uC758 \uC6B4\uB3C4 \uB098\uC558\uB2E4\uACE4 \uD560 \uC218 \uC5C6\uC5C8\uB2E4. \uD504\uB808\uB354\uB9AD\uC740 \uCC3D\uBB38\uC5D0\uC11C \uB5A8\uC5B4\uC84C\uACE0,",
+                subtitleFont ),
             33000, 6000, subtitlePosition, subtitleWidth );
-        subtitles.emplace_back( fheroes2::Text( u8"\uB85C\uBC84\uD2B8\uB294 \uC6A9\uC5D0\uAC8C \uBAA9\uC228\uC744 \uC783\uC5C8\uC73C\uBA70,", subtitleFont ), 39500, 2500, subtitlePosition,
-                                subtitleWidth );
+        subtitles.emplace_back( fheroes2::Text( u8"\uB85C\uBC84\uD2B8\uB294 \uC6A9\uC5D0\uAC8C \uBAA9\uC228\uC744 \uC783\uC5C8\uC73C\uBA70,", subtitleFont ), 39500, 2500,
+                                subtitlePosition, subtitleWidth );
         subtitles.emplace_back( fheroes2::Text( u8"\uC694\uD55C\uC740 \uC2DD\uC911\uB3C5\uC73C\uB85C \uC8FD\uC5C8\uB2E4.", subtitleFont ), 42500, 3000, subtitlePosition,
                                 subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uC544\uCE58\uBC1C\uB4DC\uB294 \uC608\uC5B8\uC790\uB4E4\uC744 \uC8FD\uC778 \uBC94\uC778\uC774 \uB864\uB79C\uB4DC\uB77C \uC8FC\uC7A5\uD558\uBA70 \uADF8\uB97C \uBC18\uC5ED\uC790\uB85C \uC120\uD3EC\uD588\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uC544\uCE58\uBC1C\uB4DC\uB294 \uC608\uC5B8\uC790\uB4E4\uC744 \uC8FD\uC778 \uBC94\uC778\uC774 \uB864\uB79C\uB4DC\uB77C \uC8FC\uC7A5\uD558\uBA70 \uADF8\uB97C \uBC18\uC5ED\uC790\uB85C \uC120\uD3EC\uD588\uB2E4.",
+                subtitleFont ),
             46000, 6000, subtitlePosition, subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uBAA9\uC228\uC758 \uC704\uD611\uC744 \uB290\uB080 \uB864\uB79C\uB4DC\uB294 \uAD81\uC804\uC744 \uB5A0\uB098 \uC11C\uCABD\uC758 \uC790\uC2E0\uC758 \uC131\uC73C\uB85C \uB2EC\uC544\uB0AC\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uBAA9\uC228\uC758 \uC704\uD611\uC744 \uB290\uB080 \uB864\uB79C\uB4DC\uB294 \uAD81\uC804\uC744 \uB5A0\uB098 \uC11C\uCABD\uC758 \uC790\uC2E0\uC758 \uC131\uC73C\uB85C \uB2EC\uC544\uB0AC\uB2E4.",
+                subtitleFont ),
             52500, 6000, subtitlePosition, subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uB864\uB79C\uB4DC\uAC00 \uC0AC\uB77C\uC9C0\uC790 \uC544\uCE58\uBC1C\uB4DC\uB294 \uC0C8 \uC655\uC2E4 \uC608\uC5B8\uC790\uC758 \uACB0\uC815\uC5D0 \uC601\uD5A5\uB825\uC744 \uD589\uC0AC\uD560 \uC218 \uC788\uC5C8\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uB864\uB79C\uB4DC\uAC00 \uC0AC\uB77C\uC9C0\uC790 \uC544\uCE58\uBC1C\uB4DC\uB294 \uC0C8 \uC655\uC2E4 \uC608\uC5B8\uC790\uC758 \uACB0\uC815\uC5D0 \uC601\uD5A5\uB825\uC744 \uD589\uC0AC\uD560 \uC218 \uC788\uC5C8\uB2E4.",
+                subtitleFont ),
             59000, 6000, subtitlePosition, subtitleWidth );
         subtitles.emplace_back(
-            fheroes2::Text( u8"\uC608\uC5B8\uC790\uB294 \uC544\uCE58\uBC1C\uB4DC\uB97C \uD6C4\uACC4\uC790\uB85C \uC120\uD0DD\uD588\uACE0, \uADF8\uB294 \uB2E4\uC74C \uB0A0 \uC2A4\uC2A4\uB85C \uC655\uC704\uC5D0 \uC62C\uB790\uB2E4.", subtitleFont ),
+            fheroes2::Text(
+                u8"\uC608\uC5B8\uC790\uB294 \uC544\uCE58\uBC1C\uB4DC\uB97C \uD6C4\uACC4\uC790\uB85C \uC120\uD0DD\uD588\uACE0, \uADF8\uB294 \uB2E4\uC74C \uB0A0 \uC2A4\uC2A4\uB85C \uC655\uC704\uC5D0 \uC62C\uB790\uB2E4.",
+                subtitleFont ),
             65500, 6000, subtitlePosition, subtitleWidth );
-        subtitles.emplace_back( fheroes2::Text( u8"\uADF8\uB807\uAC8C \uC655\uC704 \uACC4\uC2B9 \uC804\uC7C1\uC774 \uC2DC\uC791\uB418\uC5C8\uB2E4.", subtitleFont ), 72000, 4500,
-                                subtitlePosition, subtitleWidth );
+        subtitles.emplace_back( fheroes2::Text( u8"\uADF8\uB807\uAC8C \uC655\uC704 \uACC4\uC2B9 \uC804\uC7C1\uC774 \uC2DC\uC791\uB418\uC5C8\uB2E4.", subtitleFont ),
+                                72000, 4500, subtitlePosition, subtitleWidth );
 
         return subtitles;
     }
