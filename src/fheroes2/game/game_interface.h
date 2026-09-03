@@ -1,6 +1,6 @@
 /***************************************************************************
  *   fheroes2: https://github.com/ihhub/fheroes2                           *
- *   Copyright (C) 2019 - 2025                                             *
+ *   Copyright (C) 2019 - 2026                                             *
  *                                                                         *
  *   Free Heroes2 Engine: http://sourceforge.net/projects/fheroes2         *
  *   Copyright (C) 2009 by Andrey Afletdinov <fheroes2@gmail.com>          *
@@ -122,6 +122,7 @@ namespace Interface
         static fheroes2::GameMode EventScenarioInformation();
         void EventSystemDialog() const;
         void EventSwitchFocusedHero( const int32_t tileIndex );
+        fheroes2::GameMode EventCheatCodeCheck( fheroes2::Key key );
         void EventNextHero();
         void EventNextTown();
         fheroes2::GameMode EventHeroMovement();

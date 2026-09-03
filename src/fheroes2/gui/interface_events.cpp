@@ -22,11 +22,13 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <functional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -34,6 +36,9 @@
 #include "artifact_ultimate.h"
 #include "audio.h"
 #include "audio_manager.h"
+#include "campaign_data.h"
+#include "campaign_savedata.h"
+#include "campaign_scenariodata.h"
 #include "castle.h"
 #include "dialog.h"
 #include "dialog_system_options.h"
@@ -61,6 +66,7 @@
 #include "mus.h"
 #include "players.h"
 #include "puzzle.h"
+#include "resource.h"
 #include "route.h"
 #include "screen.h"
 #include "settings.h"
@@ -138,6 +144,169 @@ void Interface::AdventureMap::EventSwitchFocusedHero( const int32_t tileIndex )
     }
     SetFocus( selectedHero, false );
     RedrawFocus();
+}
+
+fheroes2::GameMode Interface::AdventureMap::EventCheatCodeCheck( const fheroes2::Key key )
+{
+    static const std::array<std::string_view, 15> cheatCodes
+        = { "911", "1313", "1911", "8675309", "101495", "101111", "899101", "844691", "844690", "32167", "1134", "1135", "1136", "1137", "1138" };
+
+    const auto keyToDigit = []( const fheroes2::Key keyValue ) -> char {
+        switch ( keyValue ) {
+        case fheroes2::Key::KEY_0:
+            return '0';
+        case fheroes2::Key::KEY_1:
+            return '1';
+        case fheroes2::Key::KEY_2:
+            return '2';
+        case fheroes2::Key::KEY_3:
+            return '3';
+        case fheroes2::Key::KEY_4:
+            return '4';
+        case fheroes2::Key::KEY_5:
+            return '5';
+        case fheroes2::Key::KEY_6:
+            return '6';
+        case fheroes2::Key::KEY_7:
+            return '7';
+        case fheroes2::Key::KEY_8:
+            return '8';
+        case fheroes2::Key::KEY_9:
+            return '9';
+        default:
+            return '\0';
+        }
+    };
+
+    static std::string codeBuffer;
+
+    const char digit = keyToDigit( key );
+    if ( digit == '\0' ) {
+        codeBuffer.clear();
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    codeBuffer += digit;
+
+    const auto isKnownPrefix = []() {
+        return std::any_of( cheatCodes.begin(), cheatCodes.end(), []( const std::string_view code ) {
+            return code.size() >= codeBuffer.size() && code.compare( 0, codeBuffer.size(), codeBuffer.data(), codeBuffer.size() ) == 0;
+        } );
+    };
+
+    if ( !isKnownPrefix() ) {
+        codeBuffer.assign( 1, digit );
+        if ( !isKnownPrefix() ) {
+            codeBuffer.clear();
+        }
+
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    const auto cheatCode = std::find( cheatCodes.begin(), cheatCodes.end(), codeBuffer );
+    if ( cheatCode == cheatCodes.end() ) {
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    const std::string activatedCode{ *cheatCode };
+    codeBuffer.clear();
+
+    if ( activatedCode == "911" || activatedCode == "1313" ) {
+        GameOver::Result & gameResult = GameOver::Result::Get();
+        gameResult.setCheatResult( activatedCode == "911" ? GameOver::WINS_ALL : GameOver::LOSS_ALL );
+        return gameResult.checkGameOver();
+    }
+
+    if ( activatedCode == "1911" ) {
+        if ( !Settings::Get().isCampaignGameType() ) {
+            return fheroes2::GameMode::CANCEL;
+        }
+
+        Campaign::CampaignSaveData & saveData = Campaign::CampaignSaveData::Get();
+        const Campaign::CampaignData & campaignData = Campaign::CampaignData::getCampaignData( saveData.getCampaignID() );
+        const std::vector<Campaign::ScenarioData> & scenarios = campaignData.getAllScenarios();
+
+        for ( auto scenario = scenarios.rbegin(); scenario != scenarios.rend(); ++scenario ) {
+            if ( campaignData.isLastScenario( scenario->getScenarioInfoId() ) ) {
+                saveData.setCurrentScenarioInfo( scenario->getScenarioInfoId() );
+                return fheroes2::GameMode::SELECT_CAMPAIGN_SCENARIO;
+            }
+        }
+
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    if ( activatedCode == "8675309" ) {
+        world.ActionFor8675309CheatCode( Settings::Get().CurrentColor() );
+        Interface::GameArea::updateMapFogDirections();
+        setRedraw( Interface::REDRAW_GAMEAREA | Interface::REDRAW_RADAR );
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    if ( activatedCode == "101495" ) {
+        Kingdom & kingdom = world.GetKingdom( Settings::Get().CurrentColor() );
+        kingdom.PuzzleMaps().set();
+        EventPuzzleMaps();
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    if ( activatedCode == "101111" || activatedCode == "899101" || activatedCode == "844691" || activatedCode == "844690" ) {
+        int resourceType = Resource::UNKNOWN;
+        uint32_t amount = 10;
+
+        if ( activatedCode == "101111" ) {
+            resourceType = Resource::GOLD;
+            amount = 1000;
+        }
+        else if ( activatedCode == "899101" ) {
+            resourceType = Resource::GEMS;
+        }
+        else if ( activatedCode == "844691" ) {
+            resourceType = Resource::ORE;
+        }
+        else {
+            resourceType = Resource::CRYSTAL;
+        }
+
+        world.GetKingdom( Settings::Get().CurrentColor() ).AddFundsResource( Funds( resourceType, amount ) );
+        setRedraw( Interface::REDRAW_STATUS );
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    Heroes * hero = GetFocusHeroes();
+    if ( hero == nullptr ) {
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    if ( activatedCode == "32167" ) {
+        hero->GetArmy().JoinTroop( Monster::BLACK_DRAGON, 5, false );
+        RedrawFocus();
+        return fheroes2::GameMode::CANCEL;
+    }
+
+    Monster::MonsterType monsterType = Monster::UNKNOWN;
+    if ( activatedCode == "1134" ) {
+        monsterType = Monster::TITAN;
+    }
+    else if ( activatedCode == "1135" ) {
+        monsterType = Monster::ARCHMAGE;
+    }
+    else if ( activatedCode == "1136" ) {
+        monsterType = Monster::STEEL_GOLEM;
+    }
+    else if ( activatedCode == "1137" ) {
+        monsterType = Monster::ROC;
+    }
+    else if ( activatedCode == "1138" ) {
+        monsterType = Monster::HALFLING;
+    }
+
+    if ( monsterType != Monster::UNKNOWN ) {
+        hero->GetArmy().JoinTroop( monsterType, 100, false );
+        RedrawFocus();
+    }
+
+    return fheroes2::GameMode::CANCEL;
 }
 
 void Interface::AdventureMap::EventNextHero()

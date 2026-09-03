@@ -1,6 +1,6 @@
 /***************************************************************************
  *   fheroes2: https://github.com/ihhub/fheroes2                           *
- *   Copyright (C) 2019 - 2025                                             *
+ *   Copyright (C) 2019 - 2026                                             *
  *                                                                         *
  *   Free Heroes2 Engine: http://sourceforge.net/projects/fheroes2         *
  *   Copyright (C) 2009 by Andrey Afletdinov <fheroes2@gmail.com>          *
@@ -81,6 +81,12 @@ namespace GameOver
         void ResetResult()
         {
             result = GameOver::COND_NONE;
+            _cheatResult = GameOver::COND_NONE;
+        }
+
+        void setCheatResult( const uint32_t cheatResult )
+        {
+            _cheatResult = cheatResult & ( GameOver::WINS | GameOver::LOSS );
         }
 
         uint32_t GetResult() const
@@ -98,6 +104,7 @@ namespace GameOver
 
         PlayerColorsSet _colors{ 0 };
         uint32_t result{ 0 };
+        uint32_t _cheatResult{ GameOver::COND_NONE };
     };
 
     OStreamBase & operator<<( OStreamBase & stream, const Result & res );
