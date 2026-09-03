@@ -1,0 +1,42 @@
+name: Fix cheat port style regression
+
+on:
+  push:
+    branches:
+      - feature/legacy-cheat-codes
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/legacy-cheat-codes
+          fetch-depth: 0
+
+      - name: Restore current master formatting outside cheat change
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/fheroes2/game/game_startgame.cpp')
+          s = p.read_text()
+          old = '            DEBUG_LOG( DBG_GAME, DBG_WARN, "the current player from the save file was not found" << ", player color: " << Color::String( conf.CurrentColor() ) )\n'
+          new = '''            DEBUG_LOG( DBG_GAME, DBG_WARN,\n                       "the current player from the save file was not found"\n                           << ", player color: " << Color::String( conf.CurrentColor() ) )\n'''
+          if old not in s:
+              raise SystemExit('expected formatting regression not found')
+          p.write_text(s.replace(old, new, 1))
+          PY
+          git diff --check
+
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/fheroes2/game/game_startgame.cpp
+          git commit -m "style: preserve current game_startgame formatting"
+          git push origin HEAD:feature/legacy-cheat-codes
