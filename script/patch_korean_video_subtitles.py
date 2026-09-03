@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """Prepare Korean video subtitles for the custom fheroes2 byte renderer.
 
-The Korean renderer does not consume UTF-8 directly. Runtime Korean text is
-normally converted by compile_korean_mo.py to a compact three-byte Hangul
-encoding. Video subtitles that live in C++ have to use the same encoding.
-
-This build-time patch converts the Succession Wars intro literals, adds
-subtitles for the first Roland/Archibald crystal-ball briefings and adapts the
-stock subtitle renderer so Korean subtitles do not depend on Smacker palettes.
+This test variant intentionally keeps the large Korean subtitle face while
+removing the stock video contour and any background treatment. It is meant to
+check whether the earlier readability issue came from the contour rather than
+the large bitmap font itself.
 """
 
 from __future__ import annotations
@@ -82,14 +79,12 @@ def encode_intro_literals(source: str) -> str:
 
     block = source[start:end]
 
-    # Keep the normal Korean bitmap face. The large face is too heavy over video.
-    block = block.replace("const fheroes2::Point subtitlePosition{ 320, 430 };", "const fheroes2::Point subtitlePosition{ 320, 410 };", 1)
-    block = block.replace("constexpr int32_t subtitleWidth = 600;", "constexpr int32_t subtitleWidth = 540;", 1)
+    # Test the earlier large subtitle face again, but without the stock contour.
+    block = block.replace("fheroes2::FontType::normalWhite()", "fheroes2::FontType::largeWhite()", 1)
+    block = block.replace("const fheroes2::Point subtitlePosition{ 320, 430 };", "const fheroes2::Point subtitlePosition{ 320, 405 };", 1)
+    block = block.replace("constexpr int32_t subtitleWidth = 600;", "constexpr int32_t subtitleWidth = 520;", 1)
 
-    # The original test data started the first narration at 6 seconds. The
-    # narration actually begins immediately while the palace is on screen.
-    # Pull only the opening section forward; the later event timings were
-    # already close to the animation beats in the test playback.
+    # Keep the corrected opening timings from the previous test.
     timing_replacements = {
         "            6000, 7000, subtitlePosition, subtitleWidth );": "            300, 8500, subtitlePosition, subtitleWidth );",
         "subtitleFont ), 13500, 2500, subtitlePosition,": "subtitleFont ), 9000, 2300, subtitlePosition,",
@@ -122,7 +117,7 @@ def make_briefing_function(name: str, lines: list[tuple[str, int, int]]) -> str:
             + f"{start_ms}, {duration_ms}, subtitlePosition, subtitleWidth );"
         )
 
-    return f'''    std::vector<Video::Subtitle> {name}()\n    {{\n        const fheroes2::FontType subtitleFont = fheroes2::FontType::normalWhite();\n        const fheroes2::Point subtitlePosition{{ 320, 400 }};\n        constexpr int32_t subtitleWidth = 540;\n\n        std::vector<Video::Subtitle> subtitles;\n        subtitles.reserve( {len(lines)} );\n{chr(10).join(entries)}\n\n        return subtitles;\n    }}\n\n'''
+    return f'''    std::vector<Video::Subtitle> {name}()\n    {{\n        const fheroes2::FontType subtitleFont = fheroes2::FontType::largeWhite();\n        const fheroes2::Point subtitlePosition{{ 320, 395 }};\n        constexpr int32_t subtitleWidth = 520;\n\n        std::vector<Video::Subtitle> subtitles;\n        subtitles.reserve( {len(lines)} );\n{chr(10).join(entries)}\n\n        return subtitles;\n    }}\n\n'''
 
 
 def add_first_briefing_subtitles(source: str) -> str:
@@ -175,15 +170,9 @@ def hook_briefing_subtitles(source: str) -> str:
 
 
 def patch_korean_subtitle_rendering(source: str) -> str:
-    include_marker = '#include "game_video_type.h"\n'
-    if '#include "image_palette.h"\n' not in source:
-        if include_marker not in source:
-            raise SystemExit("game_video include insertion point was not found.")
-        source = source.replace(include_marker, include_marker + '#include "image_palette.h"\n', 1)
-
     old = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n\n        // We add extra 1 to have space for contour.\n        _subtitleImage.resize( textWidth + 1, subtitleText.height( textWidth ) + 1 );\n\n        // Draw text and remove all shadow data if it could not be properly applied to video palette.\n        // We use the black color with id = 36 so no shadow will be applied to it.\n        const uint8_t blackColor = 36;\n        _subtitleImage.fill( blackColor );\n\n        // At the left and bottom there is space for contour left by original font shadows, we leave 1 extra pixel from the right and top.\n        subtitleText.draw( 0, 1, textWidth, _subtitleImage );\n        fheroes2::ReplaceColorIdByTransformId( _subtitleImage, blackColor, 1 );\n        // Add black contour to the text.\n        fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, blackColor ), _subtitleImage );\n'''
 
-    new = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n        const bool isKoreanSubtitle = Settings::Get().getGameLanguage() == "ko";\n\n        // We add extra 1 for the original font shadow placement.\n        _subtitleImage.resize( textWidth + 1, subtitleText.height( textWidth ) + 1 );\n\n        const uint8_t markerColor = 36;\n        _subtitleImage.fill( markerColor );\n        subtitleText.draw( 0, 1, textWidth, _subtitleImage );\n\n        if ( isKoreanSubtitle ) {\n            // Smacker videos can replace the whole 256-color palette on every\n            // frame. Therefore no subtitle pixel may depend on a palette index.\n            // Convert every regular text pixel to a lightening transform, the\n            // Korean one-pixel drop shadow to a darkening transform, and the\n            // untouched marker area to transparency. This also covers ASCII\n            // digits and punctuation mixed into Korean subtitles.\n            const uint8_t koreanShadowColor = fheroes2::GetColorId( 35, 35, 35 );\n            uint8_t * imageData = _subtitleImage.image();\n            uint8_t * transformData = _subtitleImage.transform();\n            const int32_t pixelCount = _subtitleImage.width() * _subtitleImage.height();\n\n            for ( int32_t i = 0; i < pixelCount; ++i ) {\n                if ( transformData[i] != 0 ) {\n                    continue;\n                }\n\n                if ( imageData[i] == markerColor ) {\n                    transformData[i] = 1;\n                }\n                else if ( imageData[i] == koreanShadowColor ) {\n                    transformData[i] = 2;\n                }\n                else {\n                    transformData[i] = 6;\n                }\n            }\n        }\n        else {\n            fheroes2::ReplaceColorIdByTransformId( _subtitleImage, markerColor, 1 );\n            // Add black contour to the text.\n            fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, markerColor ), _subtitleImage );\n        }\n'''
+    new = '''        assert( maxWidth > 0 );\n        const int32_t textWidth = subtitleText.width( maxWidth );\n        const bool isKoreanSubtitle = Settings::Get().getGameLanguage() == "ko";\n\n        // Keep the stock subtitle bitmap size and text drawing. Korean subtitles\n        // deliberately skip CreateContour(): the earlier thick test was readable,\n        // but the generated contour changed appearance with Smacker palettes.\n        _subtitleImage.resize( textWidth + 1, subtitleText.height( textWidth ) + 1 );\n\n        const uint8_t blackColor = 36;\n        _subtitleImage.fill( blackColor );\n        subtitleText.draw( 0, 1, textWidth, _subtitleImage );\n        fheroes2::ReplaceColorIdByTransformId( _subtitleImage, blackColor, 1 );\n\n        if ( !isKoreanSubtitle ) {\n            // Preserve the original fheroes2 contour for non-Korean subtitles.\n            fheroes2::Blit( fheroes2::CreateContour( _subtitleImage, blackColor ), _subtitleImage );\n        }\n'''
 
     if old not in source:
         raise SystemExit("Subtitle constructor rendering block was not found.")
@@ -198,7 +187,7 @@ def main() -> None:
     source = hook_briefing_subtitles(source)
     source = patch_korean_subtitle_rendering(source)
     path.write_text(source, encoding="utf-8", newline="\n")
-    print("Prepared palette-independent Korean subtitles with corrected intro opening timings.")
+    print("Prepared large Korean subtitles without stock video contour or background.")
 
 
 if __name__ == "__main__":
