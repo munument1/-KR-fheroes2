@@ -26343,7 +26343,7 @@ msgid "Move the %{name} "
 msgstr "%{name} 이동 "
 
 msgid " bane"
-msgstr " 독"
+msgstr " 천적"
 
 msgid " alliance"
 msgstr " 동맹"
