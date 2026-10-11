@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <string_view>
 
 #include "game.h"
 #include "game_assets.h"
