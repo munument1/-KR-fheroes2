@@ -1,6 +1,6 @@
 ###########################################################################
 #   fheroes2: https://github.com/ihhub/fheroes2                           #
-#   Copyright (C) 2021 - 2025                                             #
+#   Copyright (C) 2021 - 2026                                             #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or modify  #
 #   it under the terms of the GNU General Public License as published by  #
@@ -29,6 +29,14 @@ endif
 SOURCEROOT := ../../fheroes2
 SOURCEDIRS := $(filter %/,$(wildcard $(SOURCEROOT)/*/))
 SOURCES := $(wildcard $(SOURCEROOT)/*/*.cpp)
+
+# Match the CMake source selection: use the Korean renderer only when the
+# generated Hangul bitmap header is available. Stock builds use ui_text.cpp.
+ifneq ($(wildcard $(SOURCEROOT)/gui/korean_font_generated.h),)
+SOURCES := $(filter-out $(SOURCEROOT)/gui/ui_text.cpp,$(SOURCES))
+else
+SOURCES := $(filter-out $(SOURCEROOT)/gui/korean_font.cpp $(SOURCEROOT)/gui/ui_text_korean.cpp,$(SOURCES))
+endif
 
 VPATH := $(SOURCEDIRS)
 

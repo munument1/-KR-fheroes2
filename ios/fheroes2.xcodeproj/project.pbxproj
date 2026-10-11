@@ -176,6 +176,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CMakeLists.txt,
+				"gui/korean_font.cpp",
+				"gui/ui_text_korean.cpp",
 			);
 			target = EA54669329FE02FF00A9D8B2 /* fheroes2 */;
 		};
