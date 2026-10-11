@@ -32,6 +32,7 @@
 #include <utility>
 #include <vector>
 
+#include "army.h"
 #include "artifact.h"
 #include "artifact_ultimate.h"
 #include "audio.h"
@@ -58,10 +59,12 @@
 #include "interface_radar.h"
 #include "interface_status.h"
 #include "kingdom.h"
+#include "localevent.h"
 #include "logging.h"
 #include "m82.h"
 #include "maps.h"
 #include "maps_tiles.h"
+#include "monster.h"
 #include "mp2.h"
 #include "mus.h"
 #include "players.h"
