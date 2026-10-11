@@ -41,6 +41,11 @@ namespace Maps
     class Tile;
 }
 
+namespace fheroes2
+{
+    enum class Key : int32_t;
+}
+
 namespace GameFocus
 {
     enum
