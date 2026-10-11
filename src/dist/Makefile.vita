@@ -1,6 +1,6 @@
 ###########################################################################
 #   fheroes2: https://github.com/ihhub/fheroes2                           #
-#   Copyright (C) 2021 - 2026                                             #
+#   Copyright (C) 2021 - 2024                                             #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or modify  #
 #   it under the terms of the GNU General Public License as published by  #
@@ -24,8 +24,7 @@ CXX := arm-vita-eabi-g++
 
 # Common flags (for both C and C++ compilers) for both third-party libraries and fheroes2
 CCFLAGS := $(CCFLAGS) -I$(VITASDK)/arm-vita-eabi/include -mcpu=cortex-a9 -mfpu=neon -fgraphite-identity -floop-nest-optimize -fno-lto -fno-tree-slp-vectorize
-# Reserve room for SCE module metadata before the data segment during vita-elf-create.
-LDFLAGS := $(LDFLAGS) -L$(VITASDK)/arm-vita-eabi/lib -L$(VITASDK)/lib -Wl,--sort-common -Wl,--whole-archive -Wl,--no-whole-archive -Wl,-q -Wl,--defsym=__sce_headroom=0x4000
+LDFLAGS := $(LDFLAGS) -L$(VITASDK)/arm-vita-eabi/lib -L$(VITASDK)/lib -Wl,--sort-common -Wl,--whole-archive -Wl,--no-whole-archive -Wl,-q
 # Common flags (for both C and C++ compilers) for fheroes2 only
 CCFLAGS_FH2 := -DTARGET_PS_VITA
 
