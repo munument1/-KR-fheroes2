@@ -201,6 +201,13 @@ namespace fheroes2
             // Do nothing.
         }
 
+#if defined( __cpp_char8_t )
+        // C++20 gives u8 literals a distinct character type. Retain their UTF-8 bytes.
+        Text( const char8_t * text, const FontType fontType )
+            : Text( std::string( reinterpret_cast<const char *>( text ) ), fontType )
+        {}
+#endif
+
         Text( std::string text, const FontType fontType, const std::optional<SupportedLanguage> language )
             : _text( std::move( text ) )
             , _fontType( fontType )

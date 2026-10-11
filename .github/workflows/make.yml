@@ -241,6 +241,7 @@ jobs:
         rm -rf ~/.vitasdk-cache
       env:
         VITASDK: /usr/local/vitasdk
+        VDPM_NONINTERACTIVE: '1'
     - name: Restore Vita SDK from cache
       run: |
         if [[ -d ~/.vitasdk-cache ]]; then
