@@ -26338,3 +26338,150 @@ msgstr "족 족 족"
 msgid "Zorgon"
 msgstr "조르곤"
 
+# Additional Korean translations from upstream (2026-10)
+msgid "Move the %{name} "
+msgstr "%{name} 이동 "
+
+msgid " bane"
+msgstr " 독"
+
+msgid " alliance"
+msgstr " 동맹"
+
+msgid " bonus"
+msgstr " 보너스"
+
+msgid " defeated"
+msgstr " 패배"
+
+msgid " will always run away from your army."
+msgstr " 항상 당신의 군대를 피해 달아납니다."
+
+msgid " will be willing to join your army."
+msgstr " 당신의 군대에 기꺼이 합류하려 합니다."
+
+msgid "%{name} is a level %{value} %{race} "
+msgstr "%{name}은(는) %{value}레벨 %{race} "
+
+msgid "'Spread' combat formation spreads the castle's units from the top to the bottom of the battlefield, with at least one empty space between each unit."
+msgstr "'산개' 진형은 성의 부대를 전장의 위에서 아래까지 배치하고 부대 사이에 최소 한 칸의 빈 공간을 둡니다."
+
+msgid "'Grouped' combat formation bunches the castle's units together in the center of the castle's side of the battlefield."
+msgstr "'밀집' 진형은 성의 부대를 아군 진영 중앙에 모아 배치합니다."
+
+msgid "Total: "
+msgstr "총합: "
+
+msgid "Need: "
+msgstr "필요: "
+
+msgid "Hotkey: "
+msgstr "단축키: "
+
+msgid "Category: "
+msgstr "분류: "
+
+msgid "Event: "
+msgstr "이벤트: "
+
+msgid "guarded by "
+msgstr "경비 병력: "
+
+msgid "Map: "
+msgstr "지도: "
+
+msgid "Map saved to: "
+msgstr "지도 저장 위치: "
+
+msgid "The selected object has been moved to the top layer."
+msgstr "선택한 오브젝트를 최상위 레이어로 이동했습니다."
+
+msgid "{%number} alliance: "
+msgstr "{%number} 동맹: "
+
+msgid " playthrough(s) reached the specified time limit"
+msgstr " 회 플레이에서 지정된 시간 제한에 도달했습니다"
+
+msgid "Set the number of playthroughs."
+msgstr "플레이테스트 실행 횟수를 설정합니다."
+
+msgid "Set the maximum number of days within each playthrough is being run."
+msgstr "각 플레이테스트의 최대 진행 일수를 설정합니다."
+
+msgid "autoPlaytest|Last day of playthrough:"
+msgstr "플레이테스트 마지막 날:"
+
+msgid "Set animation speed during playthrough."
+msgstr "플레이테스트 중 애니메이션 속도를 설정합니다."
+
+msgid "Toggle animation during playthroughs."
+msgstr "플레이테스트 중 애니메이션을 켜거나 끕니다."
+
+msgid "Toggle sound effects during playthroughs."
+msgstr "플레이테스트 중 효과음을 켜거나 끕니다."
+
+msgid "campaignDifficulty|Decreased"
+msgstr "낮음"
+
+msgid "campaignDifficulty|Default"
+msgstr "보통"
+
+msgid "campaignDifficulty|Increased"
+msgstr "높음"
+
+msgid "Choose this difficulty to experience the game's story with decreased challenge. The AI will be weaker than at the default difficulty."
+msgstr "난도를 낮춰 게임의 이야기를 즐길 수 있습니다. AI가 기본 난도보다 약해집니다."
+
+msgid "Choose this difficulty to experience the campaign as close to the original design as possible with the fheroes2 AI."
+msgstr "fheroes2 AI를 사용하면서 원래 의도한 캠페인 난도에 가깝게 플레이합니다."
+
+msgid "Choose this difficulty if you want more of a challenge. The AI will be stronger than at the default difficulty."
+msgstr "더 어려운 도전을 원한다면 선택하세요. AI가 기본 난도보다 강해집니다."
+
+msgid "Unsupported save format: "
+msgstr "지원하지 않는 저장 파일 형식: "
+
+msgid "Current game version: "
+msgstr "현재 게임 버전: "
+
+msgid "Last supported version: "
+msgstr "지원하는 마지막 버전: "
+
+msgid "' language, but the current language of the game is '"
+msgstr "' 언어로 저장되었지만 현재 게임 언어는 '"
+
+msgid " gives you maximum morale"
+msgstr " 최대 사기를 부여합니다"
+
+msgid " gives you maximum luck"
+msgstr " 최대 행운을 부여합니다"
+
+msgid "You've found the artifact: "
+msgstr "유물을 발견했습니다: "
+
+msgid " and "
+msgstr " 그리고 "
+
+msgid "'Spread' combat formation spreads the hero's units from the top to the bottom of the battlefield, with at least one empty space between each unit."
+msgstr "'산개' 진형은 영웅의 부대를 전장의 위에서 아래까지 배치하고 부대 사이에 최소 한 칸의 빈 공간을 둡니다."
+
+msgid "'Grouped' combat formation bunches the hero's army together in the center of their side of the battlefield."
+msgstr "'밀집' 진형은 영웅의 군대를 아군 진영 중앙에 모아 배치합니다."
+
+msgid "Immune to "
+msgstr "면역: "
+
+msgid "Decreases enemy's morale by "
+msgstr "적의 사기 감소량: "
+
+msgid "% immunity to "
+msgstr "% 면역: "
+
+msgid "% damage from "
+msgstr "% 피해: "
+
+msgid "Increases a unit's attack skill by 3. The effect lasts for 3 rounds of combat, regardless of spell power."
+msgstr "부대의 공격력을 3 높입니다. 주문력에 관계없이 전투 3라운드 동안 지속됩니다."
+
+msgid "Summons the nearest unoccupied and either friendly or neutral boat to an adjacent shore location. A friendly boat is one which you just built or were the most recent player to occupy. A neutral boat is one which no player has occupied yet."
+msgstr "가장 가까운 빈 아군 또는 중립 배를 인접한 해안으로 소환합니다. 아군 배는 자신이 건조했거나 가장 최근에 탑승했던 배이며, 중립 배는 누구도 탑승한 적 없는 배입니다."
