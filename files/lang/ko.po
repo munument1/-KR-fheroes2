@@ -2422,6 +2422,15 @@ msgstr "이벤트:"
 msgid "Hot Keys:"
 msgstr "단축키:"
 
+msgid "hotkeys|All Categories"
+msgstr "모든 카테고리"
+
+msgid "Select hotkeys category"
+msgstr "단축키 카테고리 선택"
+
+msgid "Click here to select:\n"
+msgstr "클릭하여 선택:\n"
+
 msgid "Hide"
 msgstr "숨기기"
 
